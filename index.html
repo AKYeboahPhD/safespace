@@ -190,1544 +190,36 @@
             font-size: clamp(2.5rem, 5vw, 4rem);
             font-weight: 800;
             margin-bottom: 1.5rem;
-            line-height: 1.1;
-            letter-spacing: -0.03em;
-        }
-        
-        .welcome-content h1 .gradient-text {
-            background: var(--gradient-3);
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
+            line-height: 1.1;
         }
         
         .welcome-content p {
             font-size: 1.25rem;
             color: var(--text-secondary);
-            margin-bottom: 3rem;
-            font-weight: 400;
-        }
-        
-        .welcome-options {
-            display: flex;
-            gap: 1rem;
-            justify-content: center;
-            flex-wrap: wrap;
-        }
-        
-        /* Auth Forms */
-        .auth-screen {
-            flex: 1;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 2rem;
-        }
-        
-        .auth-form {
-            background: var(--bg-secondary);
-            border: 1px solid var(--border);
-            border-radius: 1.5rem;
-            padding: 3rem;
-            max-width: 450px;
-            width: 100%;
-        }
-        
-        .auth-form h2 {
-            font-size: 2rem;
-            margin-bottom: 0.5rem;
-            font-weight: 800;
-        }
-        
-        .auth-form p {
-            color: var(--text-secondary);
-            margin-bottom: 2rem;
-            font-size: 0.95rem;
-        }
-        
-        .form-group {
-            margin-bottom: 1.5rem;
-        }
-        
-        label {
-            font-size: 0.875rem;
-            font-weight: 600;
-            color: var(--text-secondary);
-            display: block;
-            margin-bottom: 0.5rem;
-        }
-        
-        input {
-            width: 100%;
-            padding: 1rem;
-            background: var(--bg-tertiary);
-            border: 2px solid var(--border);
-            color: var(--text-primary);
-            font-family: 'Inter', sans-serif;
-            font-size: 1rem;
-            border-radius: 0.75rem;
-            transition: all 0.2s;
-        }
-        
-        input:focus {
-            outline: none;
-            border-color: var(--primary);
-            background: var(--bg-primary);
-        }
-        
-        .form-actions {
-            display: flex;
-            gap: 1rem;
-            margin-top: 2rem;
-        }
-        
-        .form-actions button {
-            flex: 1;
-        }
-        
-        .error-message {
-            background: rgba(244, 33, 46, 0.1);
-            border: 1px solid var(--danger);
-            color: var(--danger);
-            padding: 1rem;
-            margin-bottom: 1.5rem;
-            border-radius: 0.75rem;
-            font-size: 0.875rem;
-        }
-        
-        /* Chat Container */
-        .chat-container {
-            flex: 1;
-            display: grid;
-            grid-template-columns: 350px 1fr;
-            height: calc(100vh - 65px);
-            overflow: hidden;
-        }
-        
-        @media (max-width: 768px) {
-            .chat-container {
-                grid-template-columns: 1fr;
-            }
-            
-            .rooms-sidebar {
-                display: none;
-            }
-        }
-        
-        /* Rooms Sidebar */
-        .rooms-sidebar {
-            background: var(--bg-secondary);
-            border-right: 1px solid var(--border);
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-        }
-        
-        .rooms-header {
-            padding: 1.5rem;
-            border-bottom: 1px solid var(--border);
-        }
-        
-        .rooms-header h3 {
-            font-size: 1.25rem;
-            font-weight: 700;
-            margin-bottom: 0.5rem;
-        }
-        
-        .rooms-list {
-            flex: 1;
-            overflow-y: auto;
-        }
-        
-        .room-item {
-            padding: 1rem 1.5rem;
-            border-bottom: 1px solid var(--border);
-            cursor: pointer;
-            transition: all 0.2s;
-            position: relative;
-            display: flex;
-            gap: 1rem;
-            align-items: center;
-        }
-        
-        .room-item:hover {
-            background: var(--bg-tertiary);
-        }
-        
-        .room-item.active {
-            background: var(--bg-tertiary);
-            border-left: 3px solid var(--primary);
-        }
-        
-        .room-avatar {
-            width: 48px;
-            height: 48px;
-            border-radius: 50%;
-            background: var(--gradient-1);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 700;
-            font-size: 1.25rem;
-            flex-shrink: 0;
-        }
-        
-        .room-info {
-            flex: 1;
-            min-width: 0;
-        }
-        
-        .room-nickname {
-            font-size: 0.9375rem;
-            font-weight: 600;
-            margin-bottom: 0.25rem;
-        }
-        
-        .room-preview {
-            font-size: 0.875rem;
-            color: var(--text-secondary);
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-        
-        .room-time {
-            font-size: 0.75rem;
-            color: var(--text-secondary);
-            position: absolute;
-            top: 1rem;
-            right: 1rem;
-        }
-        
-        .room-item.has-unread .room-preview {
-            color: var(--text-primary);
-            font-weight: 600;
-        }
-        
-        .room-item.has-unread::after {
-            content: '';
-            position: absolute;
-            right: 1rem;
-            bottom: 1rem;
-            width: 8px;
-            height: 8px;
-            background: var(--primary);
-            border-radius: 50%;
-        }
-        
-        /* Chat Area */
-        .chat-area {
-            display: flex;
-            flex-direction: column;
-            background: var(--bg-primary);
-            position: relative;
-        }
-        
-        .chat-header {
-            padding: 1rem 1.5rem;
-            background: var(--bg-secondary);
-            border-bottom: 1px solid var(--border);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            backdrop-filter: blur(10px);
-        }
-        
-        .chat-header-left {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-        }
-        
-        .chat-avatar {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background: var(--gradient-1);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 700;
-        }
-        
-        .chat-info h3 {
-            font-size: 1.125rem;
-            font-weight: 700;
-            margin-bottom: 0.125rem;
-        }
-        
-        .chat-info p {
-            font-size: 0.8125rem;
-            color: var(--text-secondary);
-        }
-        
-        .chat-status {
-            display: inline-flex;
-            align-items: center;
-            gap: 0.375rem;
-        }
-        
-        .status-dot {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            background: var(--success);
-            animation: pulse 2s infinite;
-        }
-        
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.5; }
-        }
-        
-        /* Messages */
-        .messages-container {
-            flex: 1;
-            overflow-y: auto;
-            padding: 2rem 1.5rem;
-            display: flex;
-            flex-direction: column;
-            gap: 1rem;
-            scroll-behavior: smooth;
-        }
-        
-        .message {
-            display: flex;
-            gap: 0.75rem;
-            max-width: 70%;
-            animation: messageSlide 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-        
-        @keyframes messageSlide {
-            from {
-                opacity: 0;
-                transform: translateY(10px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-        
-        .message.own {
-            align-self: flex-end;
-            flex-direction: row-reverse;
-        }
-        
-        .message-avatar {
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
-            background: var(--gradient-1);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 700;
-            font-size: 0.875rem;
-            flex-shrink: 0;
-        }
-        
-        .message.helper .message-avatar {
-            background: var(--gradient-2);
-        }
-        
-        .message-content {
-            flex: 1;
-        }
-        
-        .message-bubble {
-            background: var(--bg-message-other);
-            padding: 0.75rem 1rem;
-            border-radius: 1.25rem;
-            font-size: 0.9375rem;
-            line-height: 1.5;
-            word-wrap: break-word;
-        }
-        
-        .message.own .message-bubble {
-            background: var(--bg-message-own);
-            border-bottom-right-radius: 0.25rem;
-        }
-        
-        .message:not(.own) .message-bubble {
-            border-bottom-left-radius: 0.25rem;
-        }
-        
-        .message-meta {
-            display: flex;
-            gap: 0.5rem;
-            align-items: center;
-            margin-top: 0.375rem;
-            padding: 0 0.5rem;
-        }
-        
-        .message.own .message-meta {
-            flex-direction: row-reverse;
-        }
-        
-        .message-sender {
-            font-size: 0.75rem;
-            font-weight: 600;
-            color: var(--text-secondary);
-        }
-        
-        .message-time {
-            font-size: 0.75rem;
-            color: var(--text-secondary);
-        }
-        
-        .message-category {
-            font-size: 0.6875rem;
-            padding: 0.125rem 0.5rem;
-            background: var(--bg-tertiary);
-            border-radius: 9999px;
-            color: var(--text-secondary);
-        }
-        
-        /* Message Input */
-        .message-input-container {
-            padding: 1rem 1.5rem;
-            background: var(--bg-secondary);
-            border-top: 1px solid var(--border);
-        }
-        
-        .message-input-wrapper {
-            display: flex;
-            gap: 0.75rem;
-            align-items: flex-end;
-        }
-        
-        .message-input {
-            flex: 1;
-        }
-        
-        textarea {
-            width: 100%;
-            padding: 1rem 1.25rem;
-            background: var(--bg-tertiary);
-            border: 2px solid var(--border);
-            color: var(--text-primary);
-            font-family: 'Inter', sans-serif;
-            font-size: 0.9375rem;
-            resize: none;
-            min-height: 50px;
-            max-height: 150px;
-            border-radius: 1.5rem;
-            transition: all 0.2s;
-        }
-        
-        textarea:focus {
-            outline: none;
-            border-color: var(--primary);
-            background: var(--bg-primary);
-        }
-        
-        textarea::placeholder {
-            color: var(--text-secondary);
-        }
-        
-        .category-select {
-            display: flex;
-            gap: 0.5rem;
-            flex-wrap: wrap;
-            margin-top: 0.75rem;
-        }
-        
-        .category-tag {
-            font-size: 0.75rem;
-            padding: 0.375rem 0.75rem;
-            background: var(--bg-tertiary);
-            border: 1px solid var(--border);
-            color: var(--text-secondary);
-            cursor: pointer;
-            border-radius: 9999px;
-            transition: all 0.2s;
-            font-weight: 600;
-        }
-        
-        .category-tag.active {
-            background: var(--primary);
-            color: white;
-            border-color: var(--primary);
-        }
-        
-        .category-tag:hover {
-            border-color: var(--primary);
-            color: var(--primary);
-        }
-        
-        .send-button {
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            padding: 0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-shrink: 0;
-        }
-        
-        .send-button::after {
-            content: '→';
-            font-size: 1.5rem;
-            font-weight: 700;
-        }
-        
-        /* Empty State */
-        .empty-state {
-            flex: 1;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 3rem;
-            text-align: center;
-        }
-        
-        .empty-state-content {
-            max-width: 400px;
-        }
-        
-        .empty-state-icon {
-            font-size: 4rem;
-            margin-bottom: 1.5rem;
-            opacity: 0.5;
-        }
-        
-        .empty-state h3 {
-            font-size: 1.5rem;
-            font-weight: 700;
-            margin-bottom: 0.75rem;
-        }
-        
-        .empty-state p {
-            color: var(--text-secondary);
-            font-size: 1rem;
-        }
-        
-        /* Loading */
-        .loading {
-            display: inline-block;
-            width: 20px;
-            height: 20px;
-            border: 3px solid var(--border);
-            border-top-color: var(--primary);
-            border-radius: 50%;
-            animation: spin 0.8s linear infinite;
-        }
-        
-        @keyframes spin {
-            to {
-                transform: rotate(360deg);
-            }
-        }
-        
-        /* Notification Badge */
-        .notification-badge {
-            position: fixed;
-            bottom: 2rem;
-            right: 2rem;
-            background: var(--success);
-            color: white;
-            padding: 1rem 1.5rem;
-            border-radius: 1rem;
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
-            animation: slideUp 0.3s ease-out;
-            z-index: 1000;
-            font-weight: 600;
-            font-size: 0.875rem;
-        }
-        
-        @keyframes slideUp {
-            from {
-                transform: translateY(100px);
-                opacity: 0;
-            }
-            to {
-                transform: translateY(0);
-                opacity: 1;
-            }
-        }
-        
-        /* Scrollbar */
-        ::-webkit-scrollbar {
-            width: 8px;
-        }
-        
-        ::-webkit-scrollbar-track {
-            background: var(--bg-secondary);
-        }
-        
-        ::-webkit-scrollbar-thumb {
-            background: var(--border);
-            border-radius: 10px;
-        }
-        
-        ::-webkit-scrollbar-thumb:hover {
-            background: var(--text-secondary);
-        }
-        
-        /* Responsive */
-        @media (max-width: 768px) {
-            .welcome-content h1 {
-                font-size: 2.5rem;
-            }
-            
-            .message {
-                max-width: 85%;
-            }
-            
-            .auth-form {
-                padding: 2rem;
-            }
-        }
-    </style>
-</head>
-<body>
-    <div id="root"></div>
-    
-    <script type="text/babel">
-        const { useState, useEffect, useRef } = React;
-        
-        // Firebase Configuration
-        const firebaseConfig = {
-            apiKey: "AIzaSyC2_hw08LcEikg8Fut63gp1SuUsYaIqMPw",
-            authDomain: "chatsafe-f904b.firebaseapp.com",
-            projectId: "chatsafe-f904b",
-            storageBucket: "chatsafe-f904b.firebasestorage.app",
-            messagingSenderId: "890636501707",
-            appId: "1:890636501707:web:1312727b07ea63b7dd914e"
-        };
-        
-        // Initialize Firebase
-        let db, auth, messaging;
-        try {
-            if (!firebase.apps.length) {
-                firebase.initializeApp(firebaseConfig);
-            }
-            db = firebase.firestore();
-            auth = firebase.auth();
-            
-            // Initialize messaging for notifications
-            if (firebase.messaging.isSupported()) {
-                messaging = firebase.messaging();
-            }
-        } catch (error) {
-            console.error("Firebase initialization error:", error);
-        }
-        
-        // Request notification permission
-        const requestNotificationPermission = async () => {
-            if (!messaging) return;
-            
-            try {
-                const permission = await Notification.requestPermission();
-                if (permission === 'granted') {
-                    console.log('Notification permission granted');
-                }
-            } catch (error) {
-                console.error('Error requesting notification permission:', error);
-            }
-        };
-        
-        // Show browser notification
-        const showNotification = (title, body) => {
-            if (Notification.permission === 'granted') {
-                new Notification(title, {
-                    body: body,
-                    icon: '/favicon.ico',
-                    badge: '/favicon.ico'
-                });
-            }
-        };
-        
-        // Utility Functions
-        const generateNickname = () => {
-            const adjectives = ['Anonymous', 'Silent', 'Quiet', 'Peaceful', 'Hopeful', 'Brave', 'Seeking', 'Lost', 'Wandering', 'Searching'];
-            const nouns = ['Soul', 'Heart', 'Spirit', 'Voice', 'Friend', 'Seeker', 'Traveler', 'Being', 'Person', 'One'];
-            return `${adjectives[Math.floor(Math.random() * adjectives.length)]} ${nouns[Math.floor(Math.random() * nouns.length)]}`;
-        };
-        
-        const formatTime = (timestamp) => {
-            if (!timestamp) return '';
-            const date = timestamp.toDate ? timestamp.toDate() : new Date(timestamp);
-            const now = new Date();
-            const diff = now - date;
-            const minutes = Math.floor(diff / 60000);
-            const hours = Math.floor(diff / 3600000);
-            const days = Math.floor(diff / 86400000);
-            
-            if (minutes < 1) return 'just now';
-            if (minutes < 60) return `${minutes}m`;
-            if (hours < 24) return `${hours}h`;
-            if (days < 7) return `${days}d`;
-            return date.toLocaleDateString();
-        };
-        
-        const formatMessageTime = (timestamp) => {
-            if (!timestamp) return '';
-            const date = timestamp.toDate ? timestamp.toDate() : new Date(timestamp);
-            return date.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true });
-        };
-        
-        // Main App Component
-        function App() {
-            const [view, setView] = useState('welcome');
-            const [user, setUser] = useState(null);
-            const [userRole, setUserRole] = useState(null);
-            const [currentRoom, setCurrentRoom] = useState(null);
-            const [notification, setNotification] = useState(null);
-            
-            useEffect(() => {
-                const unsubscribe = auth.onAuthStateChanged(async (firebaseUser) => {
-                    if (firebaseUser) {
-                        setUser(firebaseUser);
-                        if (firebaseUser.isAnonymous) {
-                            setUserRole('visitor');
-                            
-                            // CRITICAL FIX: Restore visitor's room
-                            try {
-                                const roomsSnapshot = await db.collection('rooms')
-                                    .where('visitorId', '==', firebaseUser.uid)
-                                    .where('status', '!=', 'ended')
-                                    .orderBy('status')
-                                    .orderBy('createdAt', 'desc')
-                                    .limit(1)
-                                    .get();
-                                
-                                if (!roomsSnapshot.empty) {
-                                    const roomDoc = roomsSnapshot.docs[0];
-                                    const roomData = roomDoc.data();
-                                    setCurrentRoom({
-                                        id: roomDoc.id,
-                                        ...roomData
-                                    });
-                                    setView('visitor-chat');
-                                } else {
-                                    // No active room, show welcome
-                                    setView('welcome');
-                                }
-                            } catch (error) {
-                                console.error('Error restoring room:', error);
-                                // If there's an error (like missing index), show a helpful message
-                                if (error.message && error.message.includes('index')) {
-                                    console.error('FIRESTORE INDEX REQUIRED: Please create the composite index using the link in the error below');
-                                }
-                                setView('welcome');
-                            }
-                        } else {
-                            setUserRole('helper');
-                            setView('helper-dashboard');
-                        }
-                    } else {
-                        setUser(null);
-                        setUserRole(null);
-                        setView('welcome');
-                    }
-                });
-                
-                // Request notification permission
-                requestNotificationPermission();
-                
-                return () => unsubscribe();
-            }, []);
-            
-            const handleStartChat = async () => {
-                try {
-                    const result = await auth.signInAnonymously();
-                    const nickname = generateNickname();
-                    
-                    const roomRef = await db.collection('rooms').add({
-                        visitorId: result.user.uid,
-                        visitorNickname: nickname,
-                        helperId: null,
-                        createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-                        lastMessage: '',
-                        lastMessageTime: firebase.firestore.FieldValue.serverTimestamp(),
-                        status: 'waiting'
-                    });
-                    
-                    setCurrentRoom({
-                        id: roomRef.id,
-                        visitorNickname: nickname,
-                        visitorId: result.user.uid,
-                        status: 'waiting'
-                    });
-                    
-                    setView('visitor-chat');
-                } catch (error) {
-                    console.error('Error starting chat:', error);
-                    alert('Failed to start chat. Please try again.');
-                }
-            };
-            
-            const handleLogout = async () => {
-                await auth.signOut();
-                setView('welcome');
-                setCurrentRoom(null);
-            };
-            
-            const showNotificationBadge = (message) => {
-                setNotification(message);
-                setTimeout(() => setNotification(null), 3000);
-            };
-            
-            return (
-                <div className="app">
-                    <Header 
-                        view={view} 
-                        user={user} 
-                        userRole={userRole}
-                        onLogout={handleLogout}
-                    />
-                    
-                    {view === 'welcome' && (
-                        <WelcomeScreen 
-                            onStartChat={handleStartChat}
-                            onHelperLogin={() => setView('helper-login')}
-                        />
-                    )}
-                    
-                    {view === 'helper-login' && (
-                        <HelperLoginScreen 
-                            onBack={() => setView('welcome')}
-                            onSuccess={() => setView('helper-dashboard')}
-                        />
-                    )}
-                    
-                    {view === 'visitor-chat' && currentRoom && (
-                        <VisitorChatInterface 
-                            room={currentRoom}
-                            user={user}
-                            onNotification={showNotificationBadge}
-                        />
-                    )}
-                    
-                    {view === 'helper-dashboard' && user && (
-                        <HelperDashboard 
-                            user={user}
-                            currentRoom={currentRoom}
-                            setCurrentRoom={setCurrentRoom}
-                            onNotification={showNotificationBadge}
-                        />
-                    )}
-                    
-                    {notification && (
-                        <div className="notification-badge">
-                            {notification}
-                        </div>
-                    )}
-                </div>
-            );
-        }
-        
-        // Header Component
-        function Header({ view, user, userRole, onLogout }) {
-            return (
-                <header className="header">
-                    <div className="logo">SafeSpace</div>
-                    <div className="header-actions">
-                        {user && userRole && (
-                            <span className="user-info">
-                                {userRole === 'helper' ? user.email : 'Anonymous'}
-                            </span>
-                        )}
-                        {user && view !== 'welcome' && (
-                            <button onClick={onLogout} className="secondary">
-                                {userRole === 'helper' ? 'Logout' : 'End Chat'}
-                            </button>
-                        )}
-                    </div>
-                </header>
-            );
-        }
-        
-        // Welcome Screen
-        function WelcomeScreen({ onStartChat, onHelperLogin }) {
-            return (
-                <div className="welcome-screen">
-                    <div className="welcome-content">
-                        <h1>
-                            A <span className="gradient-text">safe space</span> for everyone
-                        </h1>
-                        <p>Share your thoughts freely. Connect with helpers who care. Completely anonymous.</p>
-                        <div className="welcome-options">
-                            <button onClick={onStartChat}>
-                                Start Anonymous Chat
-                            </button>
-                            <button onClick={onHelperLogin} className="helper">
-                                Helper Login
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            );
-        }
-        
-        // Helper Login Screen
-        function HelperLoginScreen({ onBack, onSuccess }) {
-            const [email, setEmail] = useState('');
-            const [password, setPassword] = useState('');
-            const [error, setError] = useState('');
-            const [loading, setLoading] = useState(false);
-            const [isSignup, setIsSignup] = useState(false);
-            
-            const handleSubmit = async (e) => {
-                e.preventDefault();
-                setError('');
-                setLoading(true);
-                
-                try {
-                    if (isSignup) {
-                        await auth.createUserWithEmailAndPassword(email, password);
-                        await db.collection('helpers').doc(auth.currentUser.uid).set({
-                            email: email,
-                            createdAt: firebase.firestore.FieldValue.serverTimestamp()
-                        });
-                    } else {
-                        await auth.signInWithEmailAndPassword(email, password);
-                    }
-                    onSuccess();
-                } catch (err) {
-                    setError(err.message);
-                } finally {
-                    setLoading(false);
-                }
-            };
-            
-            return (
-                <div className="auth-screen">
-                    <form className="auth-form" onSubmit={handleSubmit}>
-                        <h2>{isSignup ? 'Create Account' : 'Helper Login'}</h2>
-                        <p>{isSignup ? 'Join our team of helpers' : 'Sign in to help those in need'}</p>
-                        
-                        {error && <div className="error-message">{error}</div>}
-                        
-                        <div className="form-group">
-                            <label>Email</label>
-                            <input 
-                                type="email" 
-                                value={email}
-                                onChange={(e) => setEmail(e.target.value)}
-                                placeholder="your@email.com"
-                                required
-                            />
-                        </div>
-                        
-                        <div className="form-group">
-                            <label>Password</label>
-                            <input 
-                                type="password" 
-                                value={password}
-                                onChange={(e) => setPassword(e.target.value)}
-                                placeholder="••••••••"
-                                required
-                                minLength="6"
-                            />
-                        </div>
-                        
-                        <div className="form-actions">
-                            <button type="button" onClick={onBack} className="secondary">
-                                Back
-                            </button>
-                            <button type="submit" className="helper" disabled={loading}>
-                                {loading ? <span className="loading"></span> : (isSignup ? 'Sign Up' : 'Login')}
-                            </button>
-                        </div>
-                        
-                        <div style={{marginTop: '1rem', textAlign: 'center'}}>
-                            <button 
-                                type="button" 
-                                onClick={() => setIsSignup(!isSignup)}
-                                className="secondary"
-                                style={{fontSize: '0.875rem', padding: '0.5rem 1rem'}}
-                            >
-                                {isSignup ? 'Already have an account? Login' : 'Need an account? Sign up'}
-                            </button>
-                        </div>
-                    </form>
-                </div>
-            );
-        }
-        
-        // Visitor Chat Interface
-        function VisitorChatInterface({ room, user, onNotification }) {
-            const [messages, setMessages] = useState([]);
-            const [messageText, setMessageText] = useState('');
-            const [category, setCategory] = useState('general');
-            const messagesEndRef = useRef(null);
-            const lastMessageCount = useRef(0);
-            
-            const categories = ['general', 'spiritual', 'emotional', 'physical'];
-            
-            useEffect(() => {
-                if (!room?.id) return;
-                
-                const unsubscribe = db.collection('rooms')
-                    .doc(room.id)
-                    .collection('messages')
-                    .orderBy('timestamp', 'asc')
-                    .onSnapshot((snapshot) => {
-                        const msgs = snapshot.docs.map(doc => ({
-                            id: doc.id,
-                            ...doc.data()
-                        }));
-                        
-                        // Check for new messages from helper
-                        if (msgs.length > lastMessageCount.current) {
-                            const newMessages = msgs.slice(lastMessageCount.current);
-                            newMessages.forEach(msg => {
-                                if (msg.senderType === 'helper') {
-                                    onNotification('Helper replied to your message');
-                                    showNotification('New Message', msg.text);
-                                }
-                            });
-                        }
-                        
-                        lastMessageCount.current = msgs.length;
-                        setMessages(msgs);
-                    });
-                
-                return () => unsubscribe();
-            }, [room?.id, onNotification]);
-            
-            useEffect(() => {
-                messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-            }, [messages]);
-            
-            const sendMessage = async (e) => {
-                e.preventDefault();
-                if (!messageText.trim() || !room?.id) return;
-                
-                try {
-                    await db.collection('rooms').doc(room.id).collection('messages').add({
-                        text: messageText,
-                        senderId: user.uid,
-                        senderType: 'visitor',
-                        senderNickname: room.visitorNickname,
-                        category: category,
-                        timestamp: firebase.firestore.FieldValue.serverTimestamp()
-                    });
-                    
-                    await db.collection('rooms').doc(room.id).update({
-                        lastMessage: messageText.substring(0, 100),
-                        lastMessageTime: firebase.firestore.FieldValue.serverTimestamp()
-                    });
-                    
-                    setMessageText('');
-                } catch (error) {
-                    console.error('Error sending message:', error);
-                }
-            };
-            
-            return (
-                <div className="chat-container">
-                    <div className="chat-area">
-                        <div className="chat-header">
-                            <div className="chat-header-left">
-                                <div className="chat-avatar">
-                                    {room.visitorNickname?.[0] || '?'}
-                                </div>
-                                <div className="chat-info">
-                                    <h3>Your Safe Space</h3>
-                                    <p className="chat-status">
-                                        <span className="status-dot"></span>
-                                        Private & Confidential
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div className="messages-container">
-                            {messages.length === 0 ? (
-                                <div className="empty-state">
-                                    <div className="empty-state-content">
-                                        <div className="empty-state-icon">💬</div>
-                                        <h3>Welcome to your safe space</h3>
-                                        <p>Share what's on your mind. A helper will join soon to support you.</p>
-                                    </div>
-                                </div>
-                            ) : (
-                                <>
-                                    {messages.map((msg) => (
-                                        <div 
-                                            key={msg.id} 
-                                            className={`message ${msg.senderId === user.uid ? 'own' : ''} ${msg.senderType === 'helper' ? 'helper' : ''}`}
-                                        >
-                                            <div className="message-avatar">
-                                                {msg.senderNickname?.[0] || '?'}
-                                            </div>
-                                            <div className="message-content">
-                                                <div className="message-bubble">
-                                                    {msg.text}
-                                                </div>
-                                                <div className="message-meta">
-                                                    <span className="message-time">{formatMessageTime(msg.timestamp)}</span>
-                                                    {msg.category && msg.category !== 'general' && (
-                                                        <span className="message-category">{msg.category}</span>
-                                                    )}
-                                                </div>
-                                            </div>
-                                        </div>
-                                    ))}
-                                </>
-                            )}
-                            <div ref={messagesEndRef} />
-                        </div>
-                        
-                        <div className="message-input-container">
-                            <form onSubmit={sendMessage} className="message-input-wrapper">
-                                <div className="message-input">
-                                    <textarea 
-                                        value={messageText}
-                                        onChange={(e) => setMessageText(e.target.value)}
-                                        placeholder="Share your thoughts..."
-                                        onKeyDown={(e) => {
-                                            if (e.key === 'Enter' && !e.shiftKey) {
-                                                e.preventDefault();
-                                                sendMessage(e);
-                                            }
-                                        }}
-                                    />
-                                    <div className="category-select">
-                                        {categories.map(cat => (
-                                            <button
-                                                key={cat}
-                                                type="button"
-                                                className={`category-tag ${category === cat ? 'active' : ''}`}
-                                                onClick={() => setCategory(cat)}
-                                            >
-                                                {cat}
-                                            </button>
-                                        ))}
-                                    </div>
-                                </div>
-                                <button type="submit" className="send-button"></button>
-                            </form>
-                        </div>
-                    </div>
-                </div>
-            );
-        }
-        
-        // Helper Dashboard
-        function HelperDashboard({ user, currentRoom, setCurrentRoom, onNotification }) {
-            const [rooms, setRooms] = useState([]);
-            const [messages, setMessages] = useState([]);
-            const [messageText, setMessageText] = useState('');
-            const messagesEndRef = useRef(null);
-            const lastRoomCount = useRef(0);
-            
-            useEffect(() => {
-                const unsubscribe = db.collection('rooms')
-                    .orderBy('lastMessageTime', 'desc')
-                    .onSnapshot((snapshot) => {
-                        const roomsList = snapshot.docs.map(doc => ({
-                            id: doc.id,
-                            ...doc.data()
-                        }));
-                        
-                        // Check for new rooms
-                        if (roomsList.length > lastRoomCount.current) {
-                            onNotification('New visitor needs help');
-                            showNotification('New Visitor', 'Someone is waiting for support');
-                        }
-                        
-                        lastRoomCount.current = roomsList.length;
-                        setRooms(roomsList);
-                    });
-                
-                return () => unsubscribe();
-            }, [onNotification]);
-            
-            useEffect(() => {
-                if (!currentRoom?.id) return;
-                
-                const unsubscribe = db.collection('rooms')
-                    .doc(currentRoom.id)
-                    .collection('messages')
-                    .orderBy('timestamp', 'asc')
-                    .onSnapshot((snapshot) => {
-                        const msgs = snapshot.docs.map(doc => ({
-                            id: doc.id,
-                            ...doc.data()
-                        }));
-                        setMessages(msgs);
-                    });
-                
-                return () => unsubscribe();
-            }, [currentRoom?.id]);
-            
-            useEffect(() => {
-                messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-            }, [messages]);
-            
-            const sendMessage = async (e) => {
-                e.preventDefault();
-                if (!messageText.trim() || !currentRoom?.id) return;
-                
-                try {
-                    await db.collection('rooms').doc(currentRoom.id).collection('messages').add({
-                        text: messageText,
-                        senderId: user.uid,
-                        senderType: 'helper',
-                        senderNickname: 'Helper',
-                        timestamp: firebase.firestore.FieldValue.serverTimestamp()
-                    });
-                    
-                    await db.collection('rooms').doc(currentRoom.id).update({
-                        lastMessage: messageText.substring(0, 100),
-                        lastMessageTime: firebase.firestore.FieldValue.serverTimestamp(),
-                        helperId: user.uid,
-                        status: 'active'
-                    });
-                    
-                    setMessageText('');
-                } catch (error) {
-                    console.error('Error sending message:', error);
-                }
-            };
-            
-            return (
-                <div className="chat-container">
-                    <div className="rooms-sidebar">
-                        <div className="rooms-header">
-                            <h3>Active Conversations</h3>
-                            <p style={{fontSize: '0.875rem', color: 'var(--text-secondary)', marginTop: '0.5rem'}}>
-                                {rooms.length} {rooms.length === 1 ? 'visitor' : 'visitors'} waiting
-                            </p>
-                        </div>
-                        <div className="rooms-list">
-                            {rooms.map(room => (
-                                <div 
-                                    key={room.id}
-                                    className={`room-item ${currentRoom?.id === room.id ? 'active' : ''}`}
-                                    onClick={() => setCurrentRoom(room)}
-                                >
-                                    <div className="room-avatar">
-                                        {room.visitorNickname?.[0] || '?'}
-                                    </div>
-                                    <div className="room-info">
-                                        <div className="room-nickname">{room.visitorNickname}</div>
-                                        <div className="room-preview">{room.lastMessage || 'No messages yet'}</div>
-                                    </div>
-                                    <div className="room-time">{formatTime(room.lastMessageTime)}</div>
-                                </div>
-                            ))}
-                            {rooms.length === 0 && (
-                                <div className="empty-state">
-                                    <div className="empty-state-content">
-                                        <div className="empty-state-icon">👋</div>
-                                        <p>No visitors yet. They'll appear here when they start a chat.</p>
-                                    </div>
-                                </div>
-                            )}
-                        </div>
-                    </div>
-                    
-                    <div className="chat-area">
-                        {currentRoom ? (
-                            <>
-                                <div className="chat-header">
-                                    <div className="chat-header-left">
-                                        <div className="chat-avatar">
-                                            {currentRoom.visitorNickname?.[0] || '?'}
-                                        </div>
-                                        <div className="chat-info">
-                                            <h3>{currentRoom.visitorNickname}</h3>
-                                            <p className="chat-status">
-                                                <span className="status-dot"></span>
-                                                Active now
-                                            </p>
-                                        </div>
-                                    </div>
-                                </div>
-                                
-                                <div className="messages-container">
-                                    {messages.map((msg) => (
-                                        <div 
-                                            key={msg.id} 
-                                            className={`message ${msg.senderId === user.uid ? 'own' : ''} ${msg.senderType === 'helper' ? 'helper' : ''}`}
-                                        >
-                                            <div className="message-avatar">
-                                                {msg.senderNickname?.[0] || '?'}
-                                            </div>
-                                            <div className="message-content">
-                                                <div className="message-bubble">
-                                                    {msg.text}
-                                                </div>
-                                                <div className="message-meta">
-                                                    <span className="message-time">{formatMessageTime(msg.timestamp)}</span>
-                                                    {msg.category && msg.category !== 'general' && (
-                                                        <span className="message-category">{msg.category}</span>
-                                                    )}
-                                                </div>
-                                            </div>
-                                        </div>
-                                    ))}
-                                    <div ref={messagesEndRef} />
-                                </div>
-                                
-                                <div className="message-input-container">
-                                    <form onSubmit={sendMessage} className="message-input-wrapper">
-                                        <div className="message-input">
-                                            <textarea 
-                                                value={messageText}
-                                                onChange={(e) => setMessageText(e.target.value)}
-                                                placeholder="Type your response..."
-                                                onKeyDown={(e) => {
-                                                    if (e.key === 'Enter' && !e.shiftKey) {
-                                                        e.preventDefault();
-                                                        sendMessage(e);
-                                                    }
-                                                }}
-                                            />
-                                        </div>
-                                        <button type="submit" className="send-button"></button>
-                                    </form>
-                                </div>
-                            </>
-                        ) : (
-                            <div className="empty-state">
-                                <div className="empty-state-content">
-                                    <div className="empty-state-icon">💬</div>
-                                    <h3>Select a conversation</h3>
-                                    <p>Choose a visitor from the sidebar to start helping.</p>
-                                </div>
-                            </div>
-                        )}
-                    </div>
-                </div>
-            );
-        }
-        
-        // Render App
-        ReactDOM.render(<App />, document.getElementById('root'));
-    </script>
-</body>
-</html><!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SafeSpace - Anonymous Support Chat</title>
-    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
-    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
-    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-    
-    <!-- Firebase SDK -->
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-messaging-compat.js"></script>
-    
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
-        :root {
-            --primary: #1DA1F2;
-            --primary-dark: #1a8cd8;
-            --secondary: #FFFC00;
-            --bg-primary: #000000;
-            --bg-secondary: #16181C;
-            --bg-tertiary: #1E2328;
-            --bg-message-own: #1DA1F2;
-            --bg-message-other: #2C3640;
-            --text-primary: #E7E9EA;
-            --text-secondary: #71767B;
-            --border: #2F3336;
-            --success: #00BA7C;
-            --danger: #F4212E;
-            --gradient-1: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            --gradient-2: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-            --gradient-3: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
-        }
-        
-        body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-            background: var(--bg-primary);
-            color: var(--text-primary);
-            line-height: 1.5;
-            overflow-x: hidden;
-            -webkit-font-smoothing: antialiased;
-        }
-        
-        .app {
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-        }
-        
-        /* Header */
-        .header {
-            background: var(--bg-secondary);
-            border-bottom: 1px solid var(--border);
-            padding: 1rem 1.5rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            backdrop-filter: blur(10px);
-            position: sticky;
-            top: 0;
-            z-index: 100;
-        }
-        
-        .logo {
-            font-size: 1.5rem;
-            font-weight: 800;
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            letter-spacing: -0.02em;
-        }
-        
-        .header-actions {
-            display: flex;
-            gap: 0.75rem;
-            align-items: center;
-        }
-        
-        .user-info {
-            font-size: 0.875rem;
-            color: var(--text-secondary);
+            margin-bottom: 2.5rem;
             font-weight: 500;
         }
         
-        /* Buttons */
-        button {
-            font-family: 'Inter', sans-serif;
-            padding: 0.75rem 1.5rem;
-            border: none;
-            background: var(--primary);
-            color: white;
-            cursor: pointer;
-            font-size: 0.9375rem;
-            font-weight: 700;
-            border-radius: 9999px;
-            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-            position: relative;
-            overflow: hidden;
+        .welcome-actions {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
         }
         
-        button:hover {
-            background: var(--primary-dark);
-            transform: scale(1.05);
-        }
-        
-        button:active {
-            transform: scale(0.95);
-        }
-        
-        button.secondary {
-            background: transparent;
-            border: 1px solid var(--border);
-            color: var(--text-primary);
-        }
-        
-        button.secondary:hover {
-            background: var(--bg-tertiary);
-            border-color: var(--text-secondary);
-        }
-        
-        button.danger {
-            background: var(--danger);
-        }
-        
-        button.danger:hover {
-            background: #d01824;
-        }
-        
-        button.helper {
-            background: var(--gradient-2);
-        }
-        
-        button:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-            transform: none;
-        }
-        
-        /* Welcome Screen */
-        .welcome-screen {
+        /* Auth Form */
+        .auth-container {
             flex: 1;
             display: flex;
             align-items: center;
             justify-content: center;
             padding: 2rem;
             background: 
-                radial-gradient(ellipse at top right, rgba(29, 161, 242, 0.15) 0%, transparent 50%),
-                radial-gradient(ellipse at bottom left, rgba(255, 252, 0, 0.1) 0%, transparent 50%);
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .welcome-screen::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            right: -50%;
-            width: 100%;
-            height: 100%;
-            background: var(--gradient-3);
-            opacity: 0.1;
-            border-radius: 50%;
-            animation: float 20s infinite ease-in-out;
-        }
-        
-        @keyframes float {
-            0%, 100% { transform: translate(0, 0) rotate(0deg); }
-            50% { transform: translate(-20px, 20px) rotate(180deg); }
-        }
-        
-        .welcome-content {
-            max-width: 600px;
-            text-align: center;
-            position: relative;
-            z-index: 1;
-        }
-        
-        .welcome-content h1 {
-            font-size: clamp(2.5rem, 5vw, 4rem);
-            font-weight: 800;
-            margin-bottom: 1.5rem;
-            line-height: 1.1;
-            letter-spacing: -0.03em;
-        }
-        
-        .welcome-content h1 .gradient-text {
-            background: var(--gradient-3);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-        
-        .welcome-content p {
-            font-size: 1.25rem;
-            color: var(--text-secondary);
-            margin-bottom: 3rem;
-            font-weight: 400;
-        }
-        
-        .welcome-options {
-            display: flex;
-            gap: 1rem;
-            justify-content: center;
-            flex-wrap: wrap;
-        }
-        
-        /* Auth Forms */
-        .auth-screen {
-            flex: 1;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 2rem;
+                radial-gradient(ellipse at top left, rgba(29, 161, 242, 0.1) 0%, transparent 50%);
         }
         
         .auth-form {
@@ -1737,35 +229,37 @@
             padding: 3rem;
             max-width: 450px;
             width: 100%;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
         }
         
         .auth-form h2 {
             font-size: 2rem;
-            margin-bottom: 0.5rem;
             font-weight: 800;
+            margin-bottom: 0.5rem;
         }
         
-        .auth-form p {
+        .auth-form > p {
             color: var(--text-secondary);
             margin-bottom: 2rem;
-            font-size: 0.95rem;
         }
         
         .form-group {
             margin-bottom: 1.5rem;
         }
         
-        label {
-            font-size: 0.875rem;
-            font-weight: 600;
-            color: var(--text-secondary);
+        .form-group label {
             display: block;
             margin-bottom: 0.5rem;
+            font-weight: 600;
+            font-size: 0.875rem;
+            color: var(--text-secondary);
         }
         
-        input {
+        input[type="text"],
+        input[type="email"],
+        input[type="password"] {
             width: 100%;
-            padding: 1rem;
+            padding: 0.875rem 1.125rem;
             background: var(--bg-tertiary);
             border: 2px solid var(--border);
             color: var(--text-primary);
@@ -1779,6 +273,10 @@
             outline: none;
             border-color: var(--primary);
             background: var(--bg-primary);
+        }
+        
+        input::placeholder {
+            color: var(--text-secondary);
         }
         
         .form-actions {
@@ -1795,35 +293,27 @@
             background: rgba(244, 33, 46, 0.1);
             border: 1px solid var(--danger);
             color: var(--danger);
-            padding: 1rem;
-            margin-bottom: 1.5rem;
+            padding: 0.875rem 1.125rem;
             border-radius: 0.75rem;
+            margin-bottom: 1.5rem;
             font-size: 0.875rem;
+            font-weight: 600;
         }
         
         /* Chat Container */
         .chat-container {
             flex: 1;
-            display: grid;
-            grid-template-columns: 350px 1fr;
-            height: calc(100vh - 65px);
+            display: flex;
+            background: var(--bg-primary);
             overflow: hidden;
-        }
-        
-        @media (max-width: 768px) {
-            .chat-container {
-                grid-template-columns: 1fr;
-            }
-            
-            .rooms-sidebar {
-                display: none;
-            }
+            height: calc(100vh - 73px);
         }
         
         /* Rooms Sidebar */
         .rooms-sidebar {
-            background: var(--bg-secondary);
+            width: 320px;
             border-right: 1px solid var(--border);
+            background: var(--bg-secondary);
             display: flex;
             flex-direction: column;
             overflow: hidden;
@@ -1836,8 +326,8 @@
         
         .rooms-header h3 {
             font-size: 1.25rem;
-            font-weight: 700;
-            margin-bottom: 0.5rem;
+            font-weight: 800;
+            margin-bottom: 0.25rem;
         }
         
         .rooms-list {
@@ -1850,9 +340,8 @@
             border-bottom: 1px solid var(--border);
             cursor: pointer;
             transition: all 0.2s;
-            position: relative;
             display: flex;
-            gap: 1rem;
+            gap: 0.75rem;
             align-items: center;
         }
         
@@ -1866,15 +355,15 @@
         }
         
         .room-avatar {
-            width: 48px;
-            height: 48px;
+            width: 44px;
+            height: 44px;
             border-radius: 50%;
             background: var(--gradient-1);
             display: flex;
             align-items: center;
             justify-content: center;
-            font-weight: 700;
-            font-size: 1.25rem;
+            font-weight: 800;
+            font-size: 1.125rem;
             flex-shrink: 0;
         }
         
@@ -1884,49 +373,31 @@
         }
         
         .room-nickname {
+            font-weight: 700;
             font-size: 0.9375rem;
-            font-weight: 600;
             margin-bottom: 0.25rem;
         }
         
         .room-preview {
-            font-size: 0.875rem;
+            font-size: 0.8125rem;
             color: var(--text-secondary);
-            white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
+            white-space: nowrap;
         }
         
         .room-time {
             font-size: 0.75rem;
             color: var(--text-secondary);
-            position: absolute;
-            top: 1rem;
-            right: 1rem;
+            flex-shrink: 0;
         }
         
-        .room-item.has-unread .room-preview {
-            color: var(--text-primary);
-            font-weight: 600;
-        }
-        
-        .room-item.has-unread::after {
-            content: '';
-            position: absolute;
-            right: 1rem;
-            bottom: 1rem;
-            width: 8px;
-            height: 8px;
-            background: var(--primary);
-            border-radius: 50%;
-        }
-        
-        /* Chat Area */
+        /* Chat Area - FIXED FOR BETTER SCROLLING */
         .chat-area {
+            flex: 1;
             display: flex;
             flex-direction: column;
-            background: var(--bg-primary);
-            position: relative;
+            overflow: hidden;
         }
         
         .chat-header {
@@ -1936,23 +407,29 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            backdrop-filter: blur(10px);
+            flex-shrink: 0;
         }
         
         .chat-header-left {
             display: flex;
+            gap: 0.75rem;
             align-items: center;
-            gap: 1rem;
         }
         
         .chat-avatar {
-            width: 40px;
-            height: 40px;
+            width: 44px;
+            height: 44px;
             border-radius: 50%;
             background: var(--gradient-1);
             display: flex;
             align-items: center;
             justify-content: center;
+            font-weight: 800;
+            font-size: 1.125rem;
+            flex-shrink: 0;
+        }
+        
+        .chat-info {
             font-weight: 700;
         }
         
@@ -1986,11 +463,12 @@
             50% { opacity: 0.5; }
         }
         
-        /* Messages */
+        /* Messages - FIXED SCROLLING */
         .messages-container {
             flex: 1;
             overflow-y: auto;
-            padding: 2rem 1.5rem;
+            overflow-x: hidden;
+            padding: 1.5rem;
             display: flex;
             flex-direction: column;
             gap: 1rem;
@@ -2090,11 +568,12 @@
             color: var(--text-secondary);
         }
         
-        /* Message Input */
+        /* Message Input - FIXED TO STAY AT BOTTOM */
         .message-input-container {
             padding: 1rem 1.5rem;
             background: var(--bg-secondary);
             border-top: 1px solid var(--border);
+            flex-shrink: 0;
         }
         
         .message-input-wrapper {
@@ -2285,6 +764,14 @@
             .auth-form {
                 padding: 2rem;
             }
+            
+            .rooms-sidebar {
+                display: none;
+            }
+            
+            .chat-container {
+                height: calc(100vh - 65px);
+            }
         }
     </style>
 </head>
@@ -2305,242 +792,200 @@
         };
         
         // Initialize Firebase
-        let db, auth, messaging;
-        try {
-            if (!firebase.apps.length) {
-                firebase.initializeApp(firebaseConfig);
-            }
-            db = firebase.firestore();
-            auth = firebase.auth();
-            
-            // Initialize messaging for notifications
-            if (firebase.messaging.isSupported()) {
-                messaging = firebase.messaging();
-            }
-        } catch (error) {
-            console.error("Firebase initialization error:", error);
-        }
-        
-        // Request notification permission
-        const requestNotificationPermission = async () => {
-            if (!messaging) return;
-            
-            try {
-                const permission = await Notification.requestPermission();
-                if (permission === 'granted') {
-                    console.log('Notification permission granted');
-                }
-            } catch (error) {
-                console.error('Error requesting notification permission:', error);
-            }
-        };
-        
-        // Show browser notification
-        const showNotification = (title, body) => {
-            if (Notification.permission === 'granted') {
-                new Notification(title, {
-                    body: body,
-                    icon: '/favicon.ico',
-                    badge: '/favicon.ico'
-                });
-            }
-        };
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.firestore();
         
         // Utility Functions
-        const generateNickname = () => {
-            const adjectives = ['Anonymous', 'Silent', 'Quiet', 'Peaceful', 'Hopeful', 'Brave', 'Seeking', 'Lost', 'Wandering', 'Searching'];
-            const nouns = ['Soul', 'Heart', 'Spirit', 'Voice', 'Friend', 'Seeker', 'Traveler', 'Being', 'Person', 'One'];
-            return `${adjectives[Math.floor(Math.random() * adjectives.length)]} ${nouns[Math.floor(Math.random() * nouns.length)]}`;
-        };
-        
-        const formatTime = (timestamp) => {
+        function formatTime(timestamp) {
             if (!timestamp) return '';
-            const date = timestamp.toDate ? timestamp.toDate() : new Date(timestamp);
+            const date = timestamp.toDate();
             const now = new Date();
-            const diff = now - date;
-            const minutes = Math.floor(diff / 60000);
-            const hours = Math.floor(diff / 3600000);
-            const days = Math.floor(diff / 86400000);
+            const diffMs = now - date;
+            const diffMins = Math.floor(diffMs / 60000);
             
-            if (minutes < 1) return 'just now';
-            if (minutes < 60) return `${minutes}m`;
-            if (hours < 24) return `${hours}h`;
-            if (days < 7) return `${days}d`;
-            return date.toLocaleDateString();
-        };
+            if (diffMins < 1) return 'just now';
+            if (diffMins < 60) return `${diffMins}m`;
+            if (diffMins < 1440) return `${Math.floor(diffMins / 60)}h`;
+            return `${Math.floor(diffMins / 1440)}d`;
+        }
         
-        const formatMessageTime = (timestamp) => {
+        function formatMessageTime(timestamp) {
             if (!timestamp) return '';
-            const date = timestamp.toDate ? timestamp.toDate() : new Date(timestamp);
-            return date.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true });
-        };
+            const date = timestamp.toDate();
+            return date.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
+        }
+        
+        function showNotification(title, body) {
+            if ('Notification' in window && Notification.permission === 'granted') {
+                new Notification(title, { body, icon: '/icon.png' });
+            }
+        }
         
         // Main App Component
         function App() {
-            const [view, setView] = useState('welcome');
             const [user, setUser] = useState(null);
-            const [userRole, setUserRole] = useState(null);
-            const [currentRoom, setCurrentRoom] = useState(null);
+            const [loading, setLoading] = useState(true);
+            const [view, setView] = useState('welcome');
+            const [room, setRoom] = useState(null);
             const [notification, setNotification] = useState(null);
+            const [currentRoom, setCurrentRoom] = useState(null);
             
             useEffect(() => {
-                const unsubscribe = auth.onAuthStateChanged(async (firebaseUser) => {
-                    if (firebaseUser) {
-                        setUser(firebaseUser);
-                        if (firebaseUser.isAnonymous) {
-                            setUserRole('visitor');
+                const unsubscribe = auth.onAuthStateChanged(async (user) => {
+                    setUser(user);
+                    
+                    if (user) {
+                        if (user.isAnonymous) {
+                            const existingRoomQuery = await db.collection('rooms')
+                                .where('visitorId', '==', user.uid)
+                                .where('status', 'in', ['waiting', 'active'])
+                                .limit(1)
+                                .get();
                             
-                            // CRITICAL FIX: Restore visitor's room
-                            try {
-                                const roomsSnapshot = await db.collection('rooms')
-                                    .where('visitorId', '==', firebaseUser.uid)
-                                    .where('status', '!=', 'ended')
-                                    .orderBy('status')
-                                    .orderBy('createdAt', 'desc')
-                                    .limit(1)
-                                    .get();
-                                
-                                if (!roomsSnapshot.empty) {
-                                    const roomDoc = roomsSnapshot.docs[0];
-                                    const roomData = roomDoc.data();
-                                    setCurrentRoom({
-                                        id: roomDoc.id,
-                                        ...roomData
-                                    });
-                                    setView('visitor-chat');
-                                } else {
-                                    // No active room, show welcome
-                                    setView('welcome');
-                                }
-                            } catch (error) {
-                                console.error('Error restoring room:', error);
-                                // If there's an error (like missing index), show a helpful message
-                                if (error.message && error.message.includes('index')) {
-                                    console.error('FIRESTORE INDEX REQUIRED: Please create the composite index using the link in the error below');
-                                }
-                                setView('welcome');
+                            if (!existingRoomQuery.empty) {
+                                const existingRoom = {
+                                    id: existingRoomQuery.docs[0].id,
+                                    ...existingRoomQuery.docs[0].data()
+                                };
+                                setRoom(existingRoom);
+                                setView('visitor-chat');
+                            } else {
+                                setView('visitor-setup');
                             }
                         } else {
-                            setUserRole('helper');
                             setView('helper-dashboard');
                         }
-                    } else {
-                        setUser(null);
-                        setUserRole(null);
-                        setView('welcome');
                     }
+                    
+                    setLoading(false);
                 });
                 
-                // Request notification permission
-                requestNotificationPermission();
+                if ('Notification' in window && Notification.permission === 'default') {
+                    Notification.requestPermission();
+                }
                 
                 return () => unsubscribe();
             }, []);
             
-            const handleStartChat = async () => {
-                try {
-                    const result = await auth.signInAnonymously();
-                    const nickname = generateNickname();
-                    
-                    const roomRef = await db.collection('rooms').add({
-                        visitorId: result.user.uid,
-                        visitorNickname: nickname,
-                        helperId: null,
-                        createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-                        lastMessage: '',
-                        lastMessageTime: firebase.firestore.FieldValue.serverTimestamp(),
-                        status: 'waiting'
-                    });
-                    
-                    setCurrentRoom({
-                        id: roomRef.id,
-                        visitorNickname: nickname,
-                        visitorId: result.user.uid,
-                        status: 'waiting'
-                    });
-                    
-                    setView('visitor-chat');
-                } catch (error) {
-                    console.error('Error starting chat:', error);
-                    alert('Failed to start chat. Please try again.');
-                }
-            };
-            
-            const handleLogout = async () => {
-                await auth.signOut();
-                setView('welcome');
-                setCurrentRoom(null);
-            };
-            
-            const showNotificationBadge = (message) => {
+            const handleNotification = (message) => {
                 setNotification(message);
                 setTimeout(() => setNotification(null), 3000);
             };
             
+            if (loading) {
+                return (
+                    <div className="app">
+                        <div style={{
+                            flex: 1,
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center'
+                        }}>
+                            <span className="loading"></span>
+                        </div>
+                    </div>
+                );
+            }
+            
             return (
                 <div className="app">
                     <Header 
-                        view={view} 
                         user={user} 
-                        userRole={userRole}
-                        onLogout={handleLogout}
+                        view={view} 
+                        onLogout={() => {
+                            auth.signOut();
+                            setView('welcome');
+                            setRoom(null);
+                            setCurrentRoom(null);
+                        }}
+                        onEndChat={async () => {
+                            if (room) {
+                                await db.collection('rooms').doc(room.id).update({
+                                    status: 'ended',
+                                    endedAt: firebase.firestore.FieldValue.serverTimestamp()
+                                });
+                            }
+                            auth.signOut();
+                            setView('welcome');
+                            setRoom(null);
+                        }}
                     />
+                    
+                    {notification && (
+                        <div className="notification-badge">{notification}</div>
+                    )}
                     
                     {view === 'welcome' && (
                         <WelcomeScreen 
-                            onStartChat={handleStartChat}
+                            onVisitorStart={() => setView('visitor-setup')}
                             onHelperLogin={() => setView('helper-login')}
                         />
                     )}
                     
-                    {view === 'helper-login' && (
-                        <HelperLoginScreen 
-                            onBack={() => setView('welcome')}
-                            onSuccess={() => setView('helper-dashboard')}
-                        />
-                    )}
-                    
-                    {view === 'visitor-chat' && currentRoom && (
-                        <VisitorChatInterface 
-                            room={currentRoom}
+                    {view === 'visitor-setup' && (
+                        <VisitorSetup 
                             user={user}
-                            onNotification={showNotificationBadge}
+                            onRoomCreated={(newRoom) => {
+                                setRoom(newRoom);
+                                setView('visitor-chat');
+                            }}
+                            onBack={() => {
+                                auth.signOut();
+                                setView('welcome');
+                            }}
                         />
                     )}
                     
-                    {view === 'helper-dashboard' && user && (
+                    {view === 'visitor-chat' && room && (
+                        <VisitorChatInterface 
+                            room={room}
+                            user={user}
+                            onNotification={handleNotification}
+                        />
+                    )}
+                    
+                    {view === 'helper-login' && (
+                        <HelperLogin 
+                            onBack={() => setView('welcome')}
+                        />
+                    )}
+                    
+                    {view === 'helper-dashboard' && (
                         <HelperDashboard 
                             user={user}
                             currentRoom={currentRoom}
                             setCurrentRoom={setCurrentRoom}
-                            onNotification={showNotificationBadge}
+                            onNotification={handleNotification}
                         />
-                    )}
-                    
-                    {notification && (
-                        <div className="notification-badge">
-                            {notification}
-                        </div>
                     )}
                 </div>
             );
         }
         
         // Header Component
-        function Header({ view, user, userRole, onLogout }) {
+        function Header({ user, view, onLogout, onEndChat }) {
             return (
                 <header className="header">
                     <div className="logo">SafeSpace</div>
                     <div className="header-actions">
-                        {user && userRole && (
-                            <span className="user-info">
-                                {userRole === 'helper' ? user.email : 'Anonymous'}
-                            </span>
-                        )}
-                        {user && view !== 'welcome' && (
-                            <button onClick={onLogout} className="secondary">
-                                {userRole === 'helper' ? 'Logout' : 'End Chat'}
-                            </button>
+                        {user && (
+                            <>
+                                {user.isAnonymous ? (
+                                    <span className="user-info">Anonymous</span>
+                                ) : (
+                                    <span className="user-info">{user.email}</span>
+                                )}
+                                {view === 'visitor-chat' ? (
+                                    <button onClick={onEndChat} className="danger">
+                                        End Chat
+                                    </button>
+                                ) : (
+                                    <button onClick={onLogout} className="secondary">
+                                        Logout
+                                    </button>
+                                )}
+                            </>
                         )}
                     </div>
                 </header>
@@ -2548,20 +993,16 @@
         }
         
         // Welcome Screen
-        function WelcomeScreen({ onStartChat, onHelperLogin }) {
+        function WelcomeScreen({ onVisitorStart, onHelperLogin }) {
             return (
                 <div className="welcome-screen">
                     <div className="welcome-content">
-                        <h1>
-                            A <span className="gradient-text">safe space</span> for everyone
-                        </h1>
-                        <p>Share your thoughts freely. Connect with helpers who care. Completely anonymous.</p>
-                        <div className="welcome-options">
-                            <button onClick={onStartChat}>
-                                Start Anonymous Chat
-                            </button>
+                        <h1>Your Safe Space Awaits</h1>
+                        <p>Anonymous, confidential support when you need it most. Connect with caring helpers ready to listen.</p>
+                        <div className="welcome-actions">
+                            <button onClick={onVisitorStart}>I need to talk</button>
                             <button onClick={onHelperLogin} className="helper">
-                                Helper Login
+                                I'm a helper
                             </button>
                         </div>
                     </div>
@@ -2569,40 +1010,115 @@
             );
         }
         
-        // Helper Login Screen
-        function HelperLoginScreen({ onBack, onSuccess }) {
-            const [email, setEmail] = useState('');
-            const [password, setPassword] = useState('');
-            const [error, setError] = useState('');
+        // Visitor Setup
+        function VisitorSetup({ user, onRoomCreated, onBack }) {
+            const [nickname, setNickname] = useState('');
             const [loading, setLoading] = useState(false);
-            const [isSignup, setIsSignup] = useState(false);
+            const [error, setError] = useState('');
             
-            const handleSubmit = async (e) => {
+            const createRoom = async (e) => {
                 e.preventDefault();
-                setError('');
+                if (!nickname.trim()) {
+                    setError('Please enter a nickname');
+                    return;
+                }
+                
                 setLoading(true);
+                setError('');
                 
                 try {
-                    if (isSignup) {
-                        await auth.createUserWithEmailAndPassword(email, password);
-                        await db.collection('helpers').doc(auth.currentUser.uid).set({
-                            email: email,
-                            createdAt: firebase.firestore.FieldValue.serverTimestamp()
-                        });
-                    } else {
-                        await auth.signInWithEmailAndPassword(email, password);
+                    let currentUser = user;
+                    if (!currentUser) {
+                        const result = await auth.signInAnonymously();
+                        currentUser = result.user;
                     }
-                    onSuccess();
-                } catch (err) {
-                    setError(err.message);
-                } finally {
+                    
+                    const roomData = {
+                        visitorId: currentUser.uid,
+                        visitorNickname: nickname,
+                        status: 'waiting',
+                        createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                        lastMessageTime: firebase.firestore.FieldValue.serverTimestamp(),
+                        lastMessage: 'Waiting for helper...'
+                    };
+                    
+                    const roomRef = await db.collection('rooms').add(roomData);
+                    
+                    onRoomCreated({
+                        id: roomRef.id,
+                        ...roomData,
+                        createdAt: new Date(),
+                        lastMessageTime: new Date()
+                    });
+                } catch (error) {
+                    console.error('Error creating room:', error);
+                    setError('Failed to create room. Please try again.');
                     setLoading(false);
                 }
             };
             
             return (
-                <div className="auth-screen">
-                    <form className="auth-form" onSubmit={handleSubmit}>
+                <div className="auth-container">
+                    <form onSubmit={createRoom} className="auth-form">
+                        <h2>Welcome</h2>
+                        <p>Choose a nickname to get started. It can be anything you like.</p>
+                        
+                        {error && <div className="error-message">{error}</div>}
+                        
+                        <div className="form-group">
+                            <label>Your Nickname</label>
+                            <input 
+                                type="text" 
+                                value={nickname}
+                                onChange={(e) => setNickname(e.target.value)}
+                                placeholder="e.g., Brave Soul, Hope Seeker..."
+                                maxLength="30"
+                                required
+                            />
+                        </div>
+                        
+                        <div className="form-actions">
+                            <button type="button" onClick={onBack} className="secondary">
+                                Back
+                            </button>
+                            <button type="submit" disabled={loading}>
+                                {loading ? <span className="loading"></span> : 'Start Chat'}
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            );
+        }
+        
+        // Helper Login
+        function HelperLogin({ onBack }) {
+            const [email, setEmail] = useState('');
+            const [password, setPassword] = useState('');
+            const [loading, setLoading] = useState(false);
+            const [error, setError] = useState('');
+            const [isSignup, setIsSignup] = useState(false);
+            
+            const handleSubmit = async (e) => {
+                e.preventDefault();
+                setLoading(true);
+                setError('');
+                
+                try {
+                    if (isSignup) {
+                        await auth.createUserWithEmailAndPassword(email, password);
+                    } else {
+                        await auth.signInWithEmailAndPassword(email, password);
+                    }
+                } catch (error) {
+                    console.error('Auth error:', error);
+                    setError(error.message);
+                    setLoading(false);
+                }
+            };
+            
+            return (
+                <div className="auth-container">
+                    <form onSubmit={handleSubmit} className="auth-form">
                         <h2>{isSignup ? 'Create Account' : 'Helper Login'}</h2>
                         <p>{isSignup ? 'Join our team of helpers' : 'Sign in to help those in need'}</p>
                         
@@ -2655,7 +1171,7 @@
             );
         }
         
-        // Visitor Chat Interface
+        // Visitor Chat Interface - FIXED MESSAGE DISPLAY
         function VisitorChatInterface({ room, user, onNotification }) {
             const [messages, setMessages] = useState([]);
             const [messageText, setMessageText] = useState('');
@@ -2668,30 +1184,45 @@
             useEffect(() => {
                 if (!room?.id) return;
                 
+                console.log('Setting up visitor message listener for room:', room.id);
+                
                 const unsubscribe = db.collection('rooms')
                     .doc(room.id)
                     .collection('messages')
                     .orderBy('timestamp', 'asc')
-                    .onSnapshot((snapshot) => {
-                        const msgs = snapshot.docs.map(doc => ({
-                            id: doc.id,
-                            ...doc.data()
-                        }));
-                        
-                        // Check for new messages from helper
-                        if (msgs.length > lastMessageCount.current) {
-                            const newMessages = msgs.slice(lastMessageCount.current);
-                            newMessages.forEach(msg => {
-                                if (msg.senderType === 'helper') {
-                                    onNotification('Helper replied to your message');
-                                    showNotification('New Message', msg.text);
-                                }
+                    .onSnapshot(
+                        (snapshot) => {
+                            console.log('Visitor received snapshot with', snapshot.docs.length, 'messages');
+                            
+                            const msgs = snapshot.docs.map(doc => {
+                                const data = doc.data();
+                                console.log('Message data:', data);
+                                return {
+                                    id: doc.id,
+                                    ...data
+                                };
                             });
+                            
+                            // Check for new messages from helper
+                            if (msgs.length > lastMessageCount.current) {
+                                const newMessages = msgs.slice(lastMessageCount.current);
+                                newMessages.forEach(msg => {
+                                    if (msg.senderType === 'helper') {
+                                        onNotification('Helper replied to your message');
+                                        showNotification('New Message', msg.text);
+                                    }
+                                });
+                            }
+                            
+                            lastMessageCount.current = msgs.length;
+                            setMessages(msgs);
+                        },
+                        (error) => {
+                            console.error('Error in visitor message listener:', error);
+                            console.error('Error code:', error.code);
+                            console.error('Error message:', error.message);
                         }
-                        
-                        lastMessageCount.current = msgs.length;
-                        setMessages(msgs);
-                    });
+                    );
                 
                 return () => unsubscribe();
             }, [room?.id, onNotification]);
@@ -2705,6 +1236,8 @@
                 if (!messageText.trim() || !room?.id) return;
                 
                 try {
+                    console.log('Visitor sending message to room:', room.id);
+                    
                     await db.collection('rooms').doc(room.id).collection('messages').add({
                         text: messageText,
                         senderId: user.uid,
@@ -2815,7 +1348,7 @@
             );
         }
         
-        // Helper Dashboard
+        // Helper Dashboard - IMPROVED SCROLLING
         function HelperDashboard({ user, currentRoom, setCurrentRoom, onNotification }) {
             const [rooms, setRooms] = useState([]);
             const [messages, setMessages] = useState([]);
@@ -2848,17 +1381,32 @@
             useEffect(() => {
                 if (!currentRoom?.id) return;
                 
+                console.log('Setting up helper message listener for room:', currentRoom.id);
+                
                 const unsubscribe = db.collection('rooms')
                     .doc(currentRoom.id)
                     .collection('messages')
                     .orderBy('timestamp', 'asc')
-                    .onSnapshot((snapshot) => {
-                        const msgs = snapshot.docs.map(doc => ({
-                            id: doc.id,
-                            ...doc.data()
-                        }));
-                        setMessages(msgs);
-                    });
+                    .onSnapshot(
+                        (snapshot) => {
+                            console.log('Helper received snapshot with', snapshot.docs.length, 'messages');
+                            
+                            const msgs = snapshot.docs.map(doc => {
+                                const data = doc.data();
+                                console.log('Message data:', data);
+                                return {
+                                    id: doc.id,
+                                    ...data
+                                };
+                            });
+                            setMessages(msgs);
+                        },
+                        (error) => {
+                            console.error('Error in helper message listener:', error);
+                            console.error('Error code:', error.code);
+                            console.error('Error message:', error.message);
+                        }
+                    );
                 
                 return () => unsubscribe();
             }, [currentRoom?.id]);
@@ -2872,6 +1420,8 @@
                 if (!messageText.trim() || !currentRoom?.id) return;
                 
                 try {
+                    console.log('Helper sending message to room:', currentRoom.id);
+                    
                     await db.collection('rooms').doc(currentRoom.id).collection('messages').add({
                         text: messageText,
                         senderId: user.uid,
@@ -3011,3 +1561,4 @@
     </script>
 </body>
 </html>
+
