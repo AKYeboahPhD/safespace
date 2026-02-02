@@ -1134,6 +1134,10 @@
                 try {
                     const result = await auth.signInAnonymously();
                     const nickname = generateNickname();
+            const handleStartChat = async () => {
+                try {
+                    const result = await auth.signInAnonymously();
+                    const nickname = generateNickname();
                     
                     const roomRef = await db.collection('rooms').add({
                         visitorId: result.user.uid,
@@ -1143,7 +1147,9 @@
                         lastMessage: '',
                         lastMessageTime: firebase.firestore.FieldValue.serverTimestamp(),
                         status: 'waiting',
-                        lastReadByHelper: null
+                        lastReadByHelper: null,
+                        visitorTyping: false,
+                        helperTyping: false
                     });
                     
                     setCurrentRoom({ id: roomRef.id, visitorNickname: nickname, visitorId: result.user.uid });
@@ -1285,14 +1291,33 @@
         }
         
         // Visitor Chat
+        
+        // Visitor Chat - WITH TYPING INDICATOR
         function VisitorChat({ room, user, onToast }) {
             const [messages, setMessages] = useState([]);
             const [messageText, setMessageText] = useState('');
             const [category, setCategory] = useState('general');
+            const [helperTyping, setHelperTyping] = useState(false);
             const messagesEndRef = useRef(null);
             const lastCount = useRef(0);
+            const typingTimeoutRef = useRef(null);
             
             const categories = ['general', 'spiritual', 'emotional', 'physical'];
+            
+            // Listen for helper typing status
+            useEffect(() => {
+                if (!room?.id) return;
+                
+                const unsubscribe = db.collection('rooms').doc(room.id)
+                    .onSnapshot((doc) => {
+                        if (doc.exists) {
+                            const data = doc.data();
+                            setHelperTyping(data.helperTyping || false);
+                        }
+                    });
+                
+                return () => unsubscribe();
+            }, [room?.id]);
             
             useEffect(() => {
                 if (!room?.id) return;
@@ -1318,13 +1343,47 @@
             
             useEffect(() => {
                 messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-            }, [messages]);
+            }, [messages, helperTyping]);
+            
+            // Handle typing indicator
+            const handleTyping = async () => {
+                if (!room?.id) return;
+                
+                try {
+                    if (typingTimeoutRef.current) {
+                        clearTimeout(typingTimeoutRef.current);
+                    } else {
+                        await db.collection('rooms').doc(room.id).update({
+                            visitorTyping: true
+                        });
+                    }
+                    
+                    typingTimeoutRef.current = setTimeout(async () => {
+                        await db.collection('rooms').doc(room.id).update({
+                            visitorTyping: false
+                        });
+                        typingTimeoutRef.current = null;
+                    }, 3000);
+                } catch (error) {
+                    console.error('Error updating typing status:', error);
+                }
+            };
             
             const sendMessage = async (e) => {
                 e.preventDefault();
                 if (!messageText.trim() || !room?.id) return;
                 
                 try {
+                    // Clear typing indicator
+                    await db.collection('rooms').doc(room.id).update({
+                        visitorTyping: false
+                    });
+                    
+                    if (typingTimeoutRef.current) {
+                        clearTimeout(typingTimeoutRef.current);
+                        typingTimeoutRef.current = null;
+                    }
+                    
                     await db.collection('rooms').doc(room.id).collection('messages').add({
                         text: messageText,
                         senderId: user.uid,
@@ -1369,7 +1428,9 @@
                                 <div className="chat-avatar">{room.visitorNickname?.[0] || '?'}</div>
                                 <div className="chat-info">
                                     <h3>Your Safe Space</h3>
-                                    <p className="chat-status">Private & Confidential</p>
+                                    <p className="chat-status">
+                                        {helperTyping ? 'typing...' : 'Private & Confidential'}
+                                    </p>
                                 </div>
                             </div>
                         </div>
@@ -1413,6 +1474,14 @@
                                                 </div>
                                             )
                                         ))}
+                                        
+                                        {helperTyping && (
+                                            <div className="typing-indicator">
+                                                <div className="typing-dot"></div>
+                                                <div className="typing-dot"></div>
+                                                <div className="typing-dot"></div>
+                                            </div>
+                                        )}
                                     </>
                                 )}
                                 <div ref={messagesEndRef} />
@@ -1424,7 +1493,10 @@
                                 <div className="message-input">
                                     <textarea 
                                         value={messageText}
-                                        onChange={(e) => setMessageText(e.target.value)}
+                                        onChange={(e) => {
+                                            setMessageText(e.target.value);
+                                            handleTyping();
+                                        }}
                                         placeholder="Share your thoughts..."
                                         onKeyDown={(e) => {
                                             if (e.key === 'Enter' && !e.shiftKey) {
@@ -1454,15 +1526,17 @@
             );
         }
         
-        // Helper Dashboard
+        // Helper Dashboard - WITH TYPING INDICATOR
         function HelperDashboard({ user, currentRoom, setCurrentRoom, onToast }) {
             const [rooms, setRooms] = useState([]);
             const [messages, setMessages] = useState([]);
             const [messageText, setMessageText] = useState('');
             const [filterTab, setFilterTab] = useState('all');
             const [searchQuery, setSearchQuery] = useState('');
+            const [visitorTyping, setVisitorTyping] = useState(false);
             const messagesEndRef = useRef(null);
             const lastRoomCount = useRef(0);
+            const typingTimeoutRef = useRef(null);
             
             useEffect(() => {
                 const unsubscribe = db.collection('rooms')
@@ -1478,6 +1552,21 @@
                 
                 return () => unsubscribe();
             }, []);
+            
+            // Listen for visitor typing
+            useEffect(() => {
+                if (!currentRoom?.id) return;
+                
+                const unsubscribe = db.collection('rooms').doc(currentRoom.id)
+                    .onSnapshot((doc) => {
+                        if (doc.exists) {
+                            const data = doc.data();
+                            setVisitorTyping(data.visitorTyping || false);
+                        }
+                    });
+                
+                return () => unsubscribe();
+            }, [currentRoom?.id]);
             
             useEffect(() => {
                 if (!currentRoom?.id) return;
@@ -1497,13 +1586,47 @@
             
             useEffect(() => {
                 messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-            }, [messages]);
+            }, [messages, visitorTyping]);
+            
+            // Handle typing indicator
+            const handleTyping = async () => {
+                if (!currentRoom?.id) return;
+                
+                try {
+                    if (typingTimeoutRef.current) {
+                        clearTimeout(typingTimeoutRef.current);
+                    } else {
+                        await db.collection('rooms').doc(currentRoom.id).update({
+                            helperTyping: true
+                        });
+                    }
+                    
+                    typingTimeoutRef.current = setTimeout(async () => {
+                        await db.collection('rooms').doc(currentRoom.id).update({
+                            helperTyping: false
+                        });
+                        typingTimeoutRef.current = null;
+                    }, 3000);
+                } catch (error) {
+                    console.error('Error updating typing status:', error);
+                }
+            };
             
             const sendMessage = async (e) => {
                 e.preventDefault();
                 if (!messageText.trim() || !currentRoom?.id) return;
                 
                 try {
+                    // Clear typing indicator
+                    await db.collection('rooms').doc(currentRoom.id).update({
+                        helperTyping: false
+                    });
+                    
+                    if (typingTimeoutRef.current) {
+                        clearTimeout(typingTimeoutRef.current);
+                        typingTimeoutRef.current = null;
+                    }
+                    
                     await db.collection('rooms').doc(currentRoom.id).collection('messages').add({
                         text: messageText,
                         senderId: user.uid,
@@ -1629,7 +1752,9 @@
                                         <div className="chat-avatar">{currentRoom.visitorNickname?.[0] || '?'}</div>
                                         <div className="chat-info">
                                             <h3>{currentRoom.visitorNickname}</h3>
-                                            <p className="chat-status">Active now</p>
+                                            <p className="chat-status">
+                                                {visitorTyping ? 'typing...' : 'Active now'}
+                                            </p>
                                         </div>
                                     </div>
                                 </div>
@@ -1663,6 +1788,15 @@
                                                 </div>
                                             )
                                         ))}
+                                        
+                                        {visitorTyping && (
+                                            <div className="typing-indicator">
+                                                <div className="typing-dot"></div>
+                                                <div className="typing-dot"></div>
+                                                <div className="typing-dot"></div>
+                                            </div>
+                                        )}
+                                        
                                         <div ref={messagesEndRef} />
                                     </div>
                                 </div>
@@ -1672,7 +1806,10 @@
                                         <div className="message-input">
                                             <textarea 
                                                 value={messageText}
-                                                onChange={(e) => setMessageText(e.target.value)}
+                                                onChange={(e) => {
+                                                    setMessageText(e.target.value);
+                                                    handleTyping();
+                                                }}
                                                 placeholder="Type a message..."
                                                 onKeyDown={(e) => {
                                                     if (e.key === 'Enter' && !e.shiftKey) {
