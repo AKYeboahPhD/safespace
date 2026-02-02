@@ -878,11 +878,42 @@
             const [notification, setNotification] = useState(null);
             
             useEffect(() => {
-                const unsubscribe = auth.onAuthStateChanged((firebaseUser) => {
+                const unsubscribe = auth.onAuthStateChanged(async (firebaseUser) => {
                     if (firebaseUser) {
                         setUser(firebaseUser);
                         if (firebaseUser.isAnonymous) {
                             setUserRole('visitor');
+                            
+                            // CRITICAL FIX: Restore visitor's room
+                            try {
+                                const roomsSnapshot = await db.collection('rooms')
+                                    .where('visitorId', '==', firebaseUser.uid)
+                                    .where('status', '!=', 'ended')
+                                    .orderBy('status')
+                                    .orderBy('createdAt', 'desc')
+                                    .limit(1)
+                                    .get();
+                                
+                                if (!roomsSnapshot.empty) {
+                                    const roomDoc = roomsSnapshot.docs[0];
+                                    const roomData = roomDoc.data();
+                                    setCurrentRoom({
+                                        id: roomDoc.id,
+                                        ...roomData
+                                    });
+                                    setView('visitor-chat');
+                                } else {
+                                    // No active room, show welcome
+                                    setView('welcome');
+                                }
+                            } catch (error) {
+                                console.error('Error restoring room:', error);
+                                // If there's an error (like missing index), show a helpful message
+                                if (error.message && error.message.includes('index')) {
+                                    console.error('FIRESTORE INDEX REQUIRED: Please create the composite index using the link in the error below');
+                                }
+                                setView('welcome');
+                            }
                         } else {
                             setUserRole('helper');
                             setView('helper-dashboard');
@@ -890,6 +921,7 @@
                     } else {
                         setUser(null);
                         setUserRole(null);
+                        setView('welcome');
                     }
                 });
                 
@@ -917,7 +949,8 @@
                     setCurrentRoom({
                         id: roomRef.id,
                         visitorNickname: nickname,
-                        visitorId: result.user.uid
+                        visitorId: result.user.uid,
+                        status: 'waiting'
                     });
                     
                     setView('visitor-chat');
@@ -1155,7 +1188,7 @@
                     });
                 
                 return () => unsubscribe();
-            }, [room?.id]);
+            }, [room?.id, onNotification]);
             
             useEffect(() => {
                 messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -1304,7 +1337,7 @@
                     });
                 
                 return () => unsubscribe();
-            }, []);
+            }, [onNotification]);
             
             useEffect(() => {
                 if (!currentRoom?.id) return;
