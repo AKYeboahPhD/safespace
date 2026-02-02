@@ -1,0 +1,1268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SafeSpace - Anonymous Support Chat</title>
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Crimson+Pro:wght@300;400;600&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --bg-primary: #0a0a0a;
+            --bg-secondary: #1a1a1a;
+            --bg-tertiary: #2a2a2a;
+            --text-primary: #e8e8e8;
+            --text-secondary: #a0a0a0;
+            --accent: #00ff88;
+            --accent-dim: #00aa55;
+            --danger: #ff4444;
+            --border: #333;
+            --helper-accent: #ffaa00;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Crimson Pro', serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+        
+        .app {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        /* Header */
+        .header {
+            background: var(--bg-secondary);
+            border-bottom: 2px solid var(--accent);
+            padding: 1.5rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            animation: slideDown 0.6s ease-out;
+        }
+        
+        @keyframes slideDown {
+            from {
+                transform: translateY(-100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+        
+        .logo {
+            font-family: 'Space Mono', monospace;
+            font-size: 1.5rem;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            color: var(--accent);
+            text-transform: uppercase;
+        }
+        
+        .header-actions {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+        
+        .user-info {
+            font-family: 'Space Mono', monospace;
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+        }
+        
+        /* Buttons */
+        button {
+            font-family: 'Space Mono', monospace;
+            padding: 0.75rem 1.5rem;
+            border: 2px solid var(--accent);
+            background: transparent;
+            color: var(--accent);
+            cursor: pointer;
+            font-size: 0.875rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        button:hover {
+            background: var(--accent);
+            color: var(--bg-primary);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 255, 136, 0.3);
+        }
+        
+        button:active {
+            transform: translateY(0);
+        }
+        
+        button.secondary {
+            border-color: var(--border);
+            color: var(--text-secondary);
+        }
+        
+        button.secondary:hover {
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+        }
+        
+        button.danger {
+            border-color: var(--danger);
+            color: var(--danger);
+        }
+        
+        button.danger:hover {
+            background: var(--danger);
+            color: white;
+        }
+        
+        button.helper {
+            border-color: var(--helper-accent);
+            color: var(--helper-accent);
+        }
+        
+        button.helper:hover {
+            background: var(--helper-accent);
+            color: var(--bg-primary);
+        }
+        
+        /* Welcome Screen */
+        .welcome-screen {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+            background: 
+                radial-gradient(ellipse at top left, rgba(0, 255, 136, 0.1) 0%, transparent 50%),
+                radial-gradient(ellipse at bottom right, rgba(255, 170, 0, 0.1) 0%, transparent 50%);
+            animation: fadeIn 0.8s ease-out 0.3s both;
+        }
+        
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: scale(0.95);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+        
+        .welcome-content {
+            max-width: 600px;
+            text-align: center;
+        }
+        
+        .welcome-content h1 {
+            font-size: 3.5rem;
+            font-weight: 300;
+            margin-bottom: 1rem;
+            line-height: 1.1;
+            animation: slideUp 0.8s ease-out 0.5s both;
+        }
+        
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .welcome-content h1 strong {
+            font-weight: 600;
+            color: var(--accent);
+        }
+        
+        .welcome-content p {
+            font-size: 1.25rem;
+            color: var(--text-secondary);
+            margin-bottom: 3rem;
+            animation: slideUp 0.8s ease-out 0.7s both;
+        }
+        
+        .welcome-options {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+            animation: slideUp 0.8s ease-out 0.9s both;
+        }
+        
+        /* Auth Forms */
+        .auth-screen {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+        }
+        
+        .auth-form {
+            background: var(--bg-secondary);
+            border: 2px solid var(--border);
+            padding: 3rem;
+            max-width: 450px;
+            width: 100%;
+            animation: fadeIn 0.5s ease-out;
+        }
+        
+        .auth-form h2 {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+            font-weight: 400;
+        }
+        
+        .auth-form p {
+            color: var(--text-secondary);
+            margin-bottom: 2rem;
+            font-size: 0.95rem;
+        }
+        
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        
+        label {
+            font-family: 'Space Mono', monospace;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--text-secondary);
+            display: block;
+            margin-bottom: 0.5rem;
+        }
+        
+        input {
+            width: 100%;
+            padding: 0.875rem;
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border);
+            color: var(--text-primary);
+            font-family: 'Crimson Pro', serif;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+        
+        input:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(0, 255, 136, 0.1);
+        }
+        
+        .form-actions {
+            display: flex;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+        
+        .form-actions button {
+            flex: 1;
+        }
+        
+        .error-message {
+            background: rgba(255, 68, 68, 0.1);
+            border: 1px solid var(--danger);
+            color: var(--danger);
+            padding: 1rem;
+            margin-bottom: 1.5rem;
+            font-family: 'Space Mono', monospace;
+            font-size: 0.875rem;
+        }
+        
+        /* Chat Interface */
+        .chat-container {
+            flex: 1;
+            display: grid;
+            grid-template-columns: 300px 1fr;
+            height: calc(100vh - 80px);
+        }
+        
+        @media (max-width: 768px) {
+            .chat-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .rooms-sidebar {
+                display: none;
+            }
+            
+            .rooms-sidebar.mobile-visible {
+                display: block;
+                position: fixed;
+                top: 80px;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                z-index: 100;
+            }
+        }
+        
+        /* Rooms Sidebar */
+        .rooms-sidebar {
+            background: var(--bg-secondary);
+            border-right: 2px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+        }
+        
+        .rooms-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid var(--border);
+        }
+        
+        .rooms-header h3 {
+            font-family: 'Space Mono', monospace;
+            font-size: 0.875rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--text-secondary);
+            margin-bottom: 1rem;
+        }
+        
+        .room-item {
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid var(--border);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            position: relative;
+        }
+        
+        .room-item:hover {
+            background: var(--bg-tertiary);
+        }
+        
+        .room-item.active {
+            background: var(--bg-tertiary);
+            border-left: 4px solid var(--accent);
+        }
+        
+        .room-item.has-unread::after {
+            content: '';
+            position: absolute;
+            right: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 8px;
+            height: 8px;
+            background: var(--accent);
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0.5;
+            }
+        }
+        
+        .room-nickname {
+            font-family: 'Space Mono', monospace;
+            font-size: 0.9rem;
+            color: var(--text-primary);
+            margin-bottom: 0.25rem;
+        }
+        
+        .room-preview {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .room-time {
+            font-family: 'Space Mono', monospace;
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            margin-top: 0.25rem;
+        }
+        
+        /* Chat Area */
+        .chat-area {
+            display: flex;
+            flex-direction: column;
+            background: var(--bg-primary);
+        }
+        
+        .chat-header {
+            padding: 1.5rem 2rem;
+            background: var(--bg-secondary);
+            border-bottom: 2px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .chat-info h3 {
+            font-size: 1.25rem;
+            font-weight: 400;
+            margin-bottom: 0.25rem;
+        }
+        
+        .chat-info p {
+            font-family: 'Space Mono', monospace;
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+        
+        .messages-container {
+            flex: 1;
+            overflow-y: auto;
+            padding: 2rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+        
+        .message {
+            display: flex;
+            gap: 1rem;
+            animation: messageSlide 0.3s ease-out;
+        }
+        
+        @keyframes messageSlide {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .message.own {
+            flex-direction: row-reverse;
+        }
+        
+        .message-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--accent);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Space Mono', monospace;
+            font-weight: 700;
+            font-size: 1rem;
+            flex-shrink: 0;
+        }
+        
+        .message.helper .message-avatar {
+            background: var(--helper-accent);
+            color: var(--bg-primary);
+        }
+        
+        .message-content {
+            max-width: 60%;
+        }
+        
+        .message-header {
+            display: flex;
+            gap: 0.75rem;
+            align-items: baseline;
+            margin-bottom: 0.5rem;
+        }
+        
+        .message.own .message-header {
+            flex-direction: row-reverse;
+        }
+        
+        .message-sender {
+            font-family: 'Space Mono', monospace;
+            font-size: 0.875rem;
+            font-weight: 700;
+        }
+        
+        .message-time {
+            font-family: 'Space Mono', monospace;
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+        }
+        
+        .message-text {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            padding: 1rem;
+            font-size: 1rem;
+            line-height: 1.6;
+        }
+        
+        .message.own .message-text {
+            background: var(--bg-tertiary);
+        }
+        
+        .message.helper .message-text {
+            border-left: 3px solid var(--helper-accent);
+        }
+        
+        .message-category {
+            font-family: 'Space Mono', monospace;
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--text-secondary);
+            margin-top: 0.5rem;
+        }
+        
+        /* Message Input */
+        .message-input-container {
+            padding: 1.5rem 2rem;
+            background: var(--bg-secondary);
+            border-top: 2px solid var(--border);
+        }
+        
+        .message-input-wrapper {
+            display: flex;
+            gap: 1rem;
+            align-items: flex-end;
+        }
+        
+        .message-input {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+        
+        textarea {
+            width: 100%;
+            padding: 1rem;
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border);
+            color: var(--text-primary);
+            font-family: 'Crimson Pro', serif;
+            font-size: 1rem;
+            resize: none;
+            min-height: 60px;
+            max-height: 150px;
+        }
+        
+        textarea:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(0, 255, 136, 0.1);
+        }
+        
+        .category-select {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+        
+        .category-tag {
+            font-family: 'Space Mono', monospace;
+            font-size: 0.7rem;
+            padding: 0.25rem 0.75rem;
+            border: 1px solid var(--border);
+            background: transparent;
+            color: var(--text-secondary);
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            transition: all 0.2s ease;
+        }
+        
+        .category-tag.active {
+            background: var(--accent);
+            color: var(--bg-primary);
+            border-color: var(--accent);
+        }
+        
+        .category-tag:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+        
+        /* Empty State */
+        .empty-state {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 3rem;
+            text-align: center;
+        }
+        
+        .empty-state-content {
+            max-width: 500px;
+        }
+        
+        .empty-state h3 {
+            font-size: 2rem;
+            font-weight: 300;
+            margin-bottom: 1rem;
+            color: var(--text-secondary);
+        }
+        
+        .empty-state p {
+            color: var(--text-secondary);
+            font-size: 1rem;
+        }
+        
+        /* Loading */
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid var(--border);
+            border-top-color: var(--accent);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+        
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+        
+        /* Utility */
+        .hidden {
+            display: none !important;
+        }
+        
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: var(--bg-secondary);
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: var(--border);
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--accent-dim);
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+    
+    <script type="text/babel">
+        const { useState, useEffect, useRef } = React;
+        
+        // Firebase Configuration
+        // REPLACE WITH YOUR FIREBASE CONFIG
+        const firebaseConfig = {
+            apiKey: "YOUR_API_KEY",
+            authDomain: "YOUR_AUTH_DOMAIN",
+            projectId: "YOUR_PROJECT_ID",
+            storageBucket: "YOUR_STORAGE_BUCKET",
+            messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+            appId: "YOUR_APP_ID"
+        };
+        
+        // Initialize Firebase
+        let db, auth;
+        try {
+            if (!firebase.apps.length) {
+                firebase.initializeApp(firebaseConfig);
+            }
+            db = firebase.firestore();
+            auth = firebase.auth();
+        } catch (error) {
+            console.error("Firebase initialization error:", error);
+        }
+        
+        // Utility Functions
+        const generateNickname = () => {
+            const adjectives = ['Anonymous', 'Silent', 'Quiet', 'Peaceful', 'Hopeful', 'Brave', 'Seeking', 'Lost', 'Wandering', 'Searching'];
+            const nouns = ['Soul', 'Heart', 'Spirit', 'Voice', 'Friend', 'Seeker', 'Traveler', 'Being', 'Person', 'One'];
+            return `${adjectives[Math.floor(Math.random() * adjectives.length)]} ${nouns[Math.floor(Math.random() * nouns.length)]}`;
+        };
+        
+        const formatTime = (timestamp) => {
+            if (!timestamp) return '';
+            const date = timestamp.toDate ? timestamp.toDate() : new Date(timestamp);
+            const now = new Date();
+            const diff = now - date;
+            const minutes = Math.floor(diff / 60000);
+            const hours = Math.floor(diff / 3600000);
+            const days = Math.floor(diff / 86400000);
+            
+            if (minutes < 1) return 'just now';
+            if (minutes < 60) return `${minutes}m ago`;
+            if (hours < 24) return `${hours}h ago`;
+            if (days < 7) return `${days}d ago`;
+            return date.toLocaleDateString();
+        };
+        
+        // Main App Component
+        function App() {
+            const [view, setView] = useState('welcome'); // welcome, visitor-chat, helper-login, helper-dashboard
+            const [user, setUser] = useState(null);
+            const [userRole, setUserRole] = useState(null); // 'visitor' or 'helper'
+            const [currentRoom, setCurrentRoom] = useState(null);
+            const [rooms, setRooms] = useState([]);
+            const [messages, setMessages] = useState([]);
+            const [loading, setLoading] = useState(false);
+            
+            useEffect(() => {
+                const unsubscribe = auth.onAuthStateChanged((firebaseUser) => {
+                    if (firebaseUser) {
+                        setUser(firebaseUser);
+                        // Check if helper or visitor
+                        if (firebaseUser.isAnonymous) {
+                            setUserRole('visitor');
+                        } else {
+                            setUserRole('helper');
+                            setView('helper-dashboard');
+                        }
+                    } else {
+                        setUser(null);
+                        setUserRole(null);
+                    }
+                });
+                
+                return () => unsubscribe();
+            }, []);
+            
+            const handleStartChat = async () => {
+                setLoading(true);
+                try {
+                    const result = await auth.signInAnonymously();
+                    const nickname = generateNickname();
+                    
+                    // Create a new chat room
+                    const roomRef = await db.collection('rooms').add({
+                        visitorId: result.user.uid,
+                        visitorNickname: nickname,
+                        helperId: null,
+                        createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                        lastMessage: '',
+                        lastMessageTime: firebase.firestore.FieldValue.serverTimestamp(),
+                        status: 'waiting' // waiting, active, closed
+                    });
+                    
+                    setCurrentRoom({
+                        id: roomRef.id,
+                        visitorNickname: nickname,
+                        visitorId: result.user.uid
+                    });
+                    
+                    setView('visitor-chat');
+                } catch (error) {
+                    console.error('Error starting chat:', error);
+                    alert('Failed to start chat. Please try again.');
+                } finally {
+                    setLoading(false);
+                }
+            };
+            
+            const handleLogout = async () => {
+                await auth.signOut();
+                setView('welcome');
+                setCurrentRoom(null);
+                setMessages([]);
+                setRooms([]);
+            };
+            
+            return (
+                <div className="app">
+                    <Header 
+                        view={view} 
+                        user={user} 
+                        userRole={userRole}
+                        onLogout={handleLogout}
+                        onBackToWelcome={() => setView('welcome')}
+                    />
+                    
+                    {view === 'welcome' && (
+                        <WelcomeScreen 
+                            onStartChat={handleStartChat}
+                            onHelperLogin={() => setView('helper-login')}
+                            loading={loading}
+                        />
+                    )}
+                    
+                    {view === 'helper-login' && (
+                        <HelperLoginScreen 
+                            onBack={() => setView('welcome')}
+                            onSuccess={() => setView('helper-dashboard')}
+                        />
+                    )}
+                    
+                    {view === 'visitor-chat' && currentRoom && (
+                        <VisitorChatInterface 
+                            room={currentRoom}
+                            user={user}
+                        />
+                    )}
+                    
+                    {view === 'helper-dashboard' && user && (
+                        <HelperDashboard 
+                            user={user}
+                            currentRoom={currentRoom}
+                            setCurrentRoom={setCurrentRoom}
+                        />
+                    )}
+                </div>
+            );
+        }
+        
+        // Header Component
+        function Header({ view, user, userRole, onLogout, onBackToWelcome }) {
+            return (
+                <header className="header">
+                    <div className="logo">SafeSpace</div>
+                    <div className="header-actions">
+                        {user && userRole && (
+                            <span className="user-info">
+                                {userRole === 'helper' ? `Helper: ${user.email}` : 'Anonymous User'}
+                            </span>
+                        )}
+                        {user && view !== 'welcome' && (
+                            <button onClick={onLogout} className="secondary">
+                                {userRole === 'helper' ? 'Logout' : 'End Session'}
+                            </button>
+                        )}
+                    </div>
+                </header>
+            );
+        }
+        
+        // Welcome Screen
+        function WelcomeScreen({ onStartChat, onHelperLogin, loading }) {
+            return (
+                <div className="welcome-screen">
+                    <div className="welcome-content">
+                        <h1>A <strong>safe space</strong> for anonymous support</h1>
+                        <p>Share your thoughts freely. Connect with helpers who care. Completely anonymous.</p>
+                        <div className="welcome-options">
+                            <button onClick={onStartChat} disabled={loading}>
+                                {loading ? <span className="loading"></span> : 'Start Anonymous Chat'}
+                            </button>
+                            <button onClick={onHelperLogin} className="helper">
+                                Helper Login
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            );
+        }
+        
+        // Helper Login Screen
+        function HelperLoginScreen({ onBack, onSuccess }) {
+            const [email, setEmail] = useState('');
+            const [password, setPassword] = useState('');
+            const [error, setError] = useState('');
+            const [loading, setLoading] = useState(false);
+            const [isSignup, setIsSignup] = useState(false);
+            
+            const handleSubmit = async (e) => {
+                e.preventDefault();
+                setError('');
+                setLoading(true);
+                
+                try {
+                    if (isSignup) {
+                        await auth.createUserWithEmailAndPassword(email, password);
+                        // Add helper role to Firestore
+                        await db.collection('helpers').doc(auth.currentUser.uid).set({
+                            email: email,
+                            createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                        });
+                    } else {
+                        await auth.signInWithEmailAndPassword(email, password);
+                    }
+                    onSuccess();
+                } catch (err) {
+                    setError(err.message);
+                } finally {
+                    setLoading(false);
+                }
+            };
+            
+            return (
+                <div className="auth-screen">
+                    <form className="auth-form" onSubmit={handleSubmit}>
+                        <h2>{isSignup ? 'Create Helper Account' : 'Helper Login'}</h2>
+                        <p>{isSignup ? 'Register to help anonymous visitors' : 'Sign in to access support rooms'}</p>
+                        
+                        {error && <div className="error-message">{error}</div>}
+                        
+                        <div className="form-group">
+                            <label>Email</label>
+                            <input 
+                                type="email" 
+                                value={email}
+                                onChange={(e) => setEmail(e.target.value)}
+                                required
+                            />
+                        </div>
+                        
+                        <div className="form-group">
+                            <label>Password</label>
+                            <input 
+                                type="password" 
+                                value={password}
+                                onChange={(e) => setPassword(e.target.value)}
+                                required
+                                minLength="6"
+                            />
+                        </div>
+                        
+                        <div className="form-actions">
+                            <button type="button" onClick={onBack} className="secondary">
+                                Back
+                            </button>
+                            <button type="submit" className="helper" disabled={loading}>
+                                {loading ? <span className="loading"></span> : (isSignup ? 'Sign Up' : 'Login')}
+                            </button>
+                        </div>
+                        
+                        <div style={{marginTop: '1rem', textAlign: 'center'}}>
+                            <button 
+                                type="button" 
+                                onClick={() => setIsSignup(!isSignup)}
+                                className="secondary"
+                                style={{fontSize: '0.875rem', padding: '0.5rem 1rem'}}
+                            >
+                                {isSignup ? 'Already have an account? Login' : 'Need an account? Sign up'}
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            );
+        }
+        
+        // Visitor Chat Interface
+        function VisitorChatInterface({ room, user }) {
+            const [messages, setMessages] = useState([]);
+            const [messageText, setMessageText] = useState('');
+            const [category, setCategory] = useState('general');
+            const messagesEndRef = useRef(null);
+            
+            const categories = ['general', 'spiritual', 'emotional', 'physical'];
+            
+            useEffect(() => {
+                if (!room?.id) return;
+                
+                const unsubscribe = db.collection('rooms')
+                    .doc(room.id)
+                    .collection('messages')
+                    .orderBy('timestamp', 'asc')
+                    .onSnapshot((snapshot) => {
+                        const msgs = snapshot.docs.map(doc => ({
+                            id: doc.id,
+                            ...doc.data()
+                        }));
+                        setMessages(msgs);
+                    });
+                
+                return () => unsubscribe();
+            }, [room?.id]);
+            
+            useEffect(() => {
+                messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+            }, [messages]);
+            
+            const sendMessage = async (e) => {
+                e.preventDefault();
+                if (!messageText.trim() || !room?.id) return;
+                
+                try {
+                    await db.collection('rooms').doc(room.id).collection('messages').add({
+                        text: messageText,
+                        senderId: user.uid,
+                        senderType: 'visitor',
+                        senderNickname: room.visitorNickname,
+                        category: category,
+                        timestamp: firebase.firestore.FieldValue.serverTimestamp()
+                    });
+                    
+                    await db.collection('rooms').doc(room.id).update({
+                        lastMessage: messageText.substring(0, 100),
+                        lastMessageTime: firebase.firestore.FieldValue.serverTimestamp()
+                    });
+                    
+                    setMessageText('');
+                } catch (error) {
+                    console.error('Error sending message:', error);
+                }
+            };
+            
+            return (
+                <div className="chat-container">
+                    <div className="chat-area">
+                        <div className="chat-header">
+                            <div className="chat-info">
+                                <h3>Your Anonymous Chat</h3>
+                                <p>Private & Confidential</p>
+                            </div>
+                        </div>
+                        
+                        <div className="messages-container">
+                            {messages.length === 0 ? (
+                                <div className="empty-state">
+                                    <div className="empty-state-content">
+                                        <h3>Welcome to your safe space</h3>
+                                        <p>Share what's on your mind. A helper will join soon to support you.</p>
+                                    </div>
+                                </div>
+                            ) : (
+                                messages.map((msg) => (
+                                    <div 
+                                        key={msg.id} 
+                                        className={`message ${msg.senderId === user.uid ? 'own' : ''} ${msg.senderType === 'helper' ? 'helper' : ''}`}
+                                    >
+                                        <div className="message-avatar">
+                                            {msg.senderNickname?.[0] || '?'}
+                                        </div>
+                                        <div className="message-content">
+                                            <div className="message-header">
+                                                <span className="message-sender">{msg.senderNickname || 'Unknown'}</span>
+                                                <span className="message-time">{formatTime(msg.timestamp)}</span>
+                                            </div>
+                                            <div className="message-text">{msg.text}</div>
+                                            {msg.category && msg.category !== 'general' && (
+                                                <div className="message-category">#{msg.category}</div>
+                                            )}
+                                        </div>
+                                    </div>
+                                ))
+                            )}
+                            <div ref={messagesEndRef} />
+                        </div>
+                        
+                        <div className="message-input-container">
+                            <form onSubmit={sendMessage} className="message-input-wrapper">
+                                <div className="message-input">
+                                    <textarea 
+                                        value={messageText}
+                                        onChange={(e) => setMessageText(e.target.value)}
+                                        placeholder="Type your message..."
+                                        onKeyDown={(e) => {
+                                            if (e.key === 'Enter' && !e.shiftKey) {
+                                                e.preventDefault();
+                                                sendMessage(e);
+                                            }
+                                        }}
+                                    />
+                                    <div className="category-select">
+                                        {categories.map(cat => (
+                                            <button
+                                                key={cat}
+                                                type="button"
+                                                className={`category-tag ${category === cat ? 'active' : ''}`}
+                                                onClick={() => setCategory(cat)}
+                                            >
+                                                {cat}
+                                            </button>
+                                        ))}
+                                    </div>
+                                </div>
+                                <button type="submit">Send</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            );
+        }
+        
+        // Helper Dashboard
+        function HelperDashboard({ user, currentRoom, setCurrentRoom }) {
+            const [rooms, setRooms] = useState([]);
+            const [messages, setMessages] = useState([]);
+            const [messageText, setMessageText] = useState('');
+            const messagesEndRef = useRef(null);
+            
+            useEffect(() => {
+                const unsubscribe = db.collection('rooms')
+                    .orderBy('lastMessageTime', 'desc')
+                    .onSnapshot((snapshot) => {
+                        const roomsList = snapshot.docs.map(doc => ({
+                            id: doc.id,
+                            ...doc.data()
+                        }));
+                        setRooms(roomsList);
+                    });
+                
+                return () => unsubscribe();
+            }, []);
+            
+            useEffect(() => {
+                if (!currentRoom?.id) return;
+                
+                const unsubscribe = db.collection('rooms')
+                    .doc(currentRoom.id)
+                    .collection('messages')
+                    .orderBy('timestamp', 'asc')
+                    .onSnapshot((snapshot) => {
+                        const msgs = snapshot.docs.map(doc => ({
+                            id: doc.id,
+                            ...doc.data()
+                        }));
+                        setMessages(msgs);
+                    });
+                
+                return () => unsubscribe();
+            }, [currentRoom?.id]);
+            
+            useEffect(() => {
+                messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+            }, [messages]);
+            
+            const sendMessage = async (e) => {
+                e.preventDefault();
+                if (!messageText.trim() || !currentRoom?.id) return;
+                
+                try {
+                    await db.collection('rooms').doc(currentRoom.id).collection('messages').add({
+                        text: messageText,
+                        senderId: user.uid,
+                        senderType: 'helper',
+                        senderNickname: 'Helper',
+                        timestamp: firebase.firestore.FieldValue.serverTimestamp()
+                    });
+                    
+                    await db.collection('rooms').doc(currentRoom.id).update({
+                        lastMessage: messageText.substring(0, 100),
+                        lastMessageTime: firebase.firestore.FieldValue.serverTimestamp(),
+                        helperId: user.uid,
+                        status: 'active'
+                    });
+                    
+                    setMessageText('');
+                } catch (error) {
+                    console.error('Error sending message:', error);
+                }
+            };
+            
+            return (
+                <div className="chat-container">
+                    <div className="rooms-sidebar">
+                        <div className="rooms-header">
+                            <h3>Active Rooms</h3>
+                        </div>
+                        {rooms.map(room => (
+                            <div 
+                                key={room.id}
+                                className={`room-item ${currentRoom?.id === room.id ? 'active' : ''}`}
+                                onClick={() => setCurrentRoom(room)}
+                            >
+                                <div className="room-nickname">{room.visitorNickname}</div>
+                                <div className="room-preview">{room.lastMessage || 'No messages yet'}</div>
+                                <div className="room-time">{formatTime(room.lastMessageTime)}</div>
+                            </div>
+                        ))}
+                        {rooms.length === 0 && (
+                            <div style={{padding: '2rem', textAlign: 'center', color: 'var(--text-secondary)'}}>
+                                No active rooms
+                            </div>
+                        )}
+                    </div>
+                    
+                    <div className="chat-area">
+                        {currentRoom ? (
+                            <>
+                                <div className="chat-header">
+                                    <div className="chat-info">
+                                        <h3>{currentRoom.visitorNickname}</h3>
+                                        <p>Support Room</p>
+                                    </div>
+                                </div>
+                                
+                                <div className="messages-container">
+                                    {messages.map((msg) => (
+                                        <div 
+                                            key={msg.id} 
+                                            className={`message ${msg.senderId === user.uid ? 'own' : ''} ${msg.senderType === 'helper' ? 'helper' : ''}`}
+                                        >
+                                            <div className="message-avatar">
+                                                {msg.senderNickname?.[0] || '?'}
+                                            </div>
+                                            <div className="message-content">
+                                                <div className="message-header">
+                                                    <span className="message-sender">{msg.senderNickname || 'Unknown'}</span>
+                                                    <span className="message-time">{formatTime(msg.timestamp)}</span>
+                                                </div>
+                                                <div className="message-text">{msg.text}</div>
+                                                {msg.category && msg.category !== 'general' && (
+                                                    <div className="message-category">#{msg.category}</div>
+                                                )}
+                                            </div>
+                                        </div>
+                                    ))}
+                                    <div ref={messagesEndRef} />
+                                </div>
+                                
+                                <div className="message-input-container">
+                                    <form onSubmit={sendMessage} className="message-input-wrapper">
+                                        <div className="message-input">
+                                            <textarea 
+                                                value={messageText}
+                                                onChange={(e) => setMessageText(e.target.value)}
+                                                placeholder="Type your response..."
+                                                onKeyDown={(e) => {
+                                                    if (e.key === 'Enter' && !e.shiftKey) {
+                                                        e.preventDefault();
+                                                        sendMessage(e);
+                                                    }
+                                                }}
+                                            />
+                                        </div>
+                                        <button type="submit" className="helper">Send</button>
+                                    </form>
+                                </div>
+                            </>
+                        ) : (
+                            <div className="empty-state">
+                                <div className="empty-state-content">
+                                    <h3>Select a room</h3>
+                                    <p>Choose a conversation from the sidebar to start helping.</p>
+                                </div>
+                            </div>
+                        )}
+                    </div>
+                </div>
+            );
+        }
+        
+        // Render App
+        ReactDOM.render(<App />, document.getElementById('root'));
+    </script>
+</body>
+</html>
