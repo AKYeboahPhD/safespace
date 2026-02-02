@@ -2,18 +2,20 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>SafeSpace - Anonymous Support Chat</title>
     <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
     <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
     
-    <!-- Firebase SDK - SIMPLIFIED WITHOUT MESSAGING -->
+    <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
     
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     
     <style>
         * {
@@ -23,462 +25,648 @@
         }
         
         :root {
-            --primary: #1DA1F2;
-            --primary-dark: #1a8cd8;
-            --secondary: #FFFC00;
-            --bg-primary: #000000;
-            --bg-secondary: #16181C;
-            --bg-tertiary: #1E2328;
-            --bg-message-own: #1DA1F2;
-            --bg-message-other: #2C3640;
-            --text-primary: #E7E9EA;
-            --text-secondary: #71767B;
-            --border: #2F3336;
-            --success: #00BA7C;
-            --danger: #F4212E;
-            --gradient-1: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            --gradient-2: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-            --gradient-3: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            /* X (Twitter) Exact Colors */
+            --x-blue: #1D9BF0;
+            --x-blue-hover: #1A8CD8;
+            --x-blue-active: #1681BF;
+            --x-bg: #000000;
+            --x-bg-secondary: #16181C;
+            --x-bg-hover: #1C1F23;
+            --x-border: #2F3336;
+            --x-text: #E7E9EA;
+            --x-text-secondary: #71767B;
+            --x-red: #F4212E;
+            --x-green: #00BA7C;
+            --x-yellow: #FFD400;
+            
+            /* Message Colors */
+            --msg-own: #1D9BF0;
+            --msg-other: #2F3336;
+            --msg-own-text: #FFFFFF;
+            --msg-other-text: #E7E9EA;
+            
+            /* Reactions */
+            --reaction-bg: rgba(29, 155, 240, 0.1);
+            --reaction-border: rgba(29, 155, 240, 0.3);
+            
+            /* Transitions */
+            --transition-fast: 0.15s;
+            --transition-medium: 0.2s;
+            --transition-slow: 0.3s;
         }
         
         body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-            background: var(--bg-primary);
-            color: var(--text-primary);
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background: var(--x-bg);
+            color: var(--x-text);
             line-height: 1.5;
-            overflow-x: hidden;
+            overflow: hidden;
             -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
         }
         
         .app {
-            min-height: 100vh;
+            height: 100vh;
             display: flex;
             flex-direction: column;
+            overflow: hidden;
         }
         
-        /* Header */
+        /* Header - X Style */
         .header {
-            background: var(--bg-secondary);
-            border-bottom: 1px solid var(--border);
-            padding: 1rem 1.5rem;
+            background: var(--x-bg);
+            border-bottom: 1px solid var(--x-border);
+            padding: 0;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            backdrop-filter: blur(10px);
+            height: 53px;
+            padding: 0 16px;
+            flex-shrink: 0;
             position: sticky;
             top: 0;
             z-index: 100;
+            backdrop-filter: blur(12px);
         }
         
         .logo {
-            font-size: 1.5rem;
+            font-size: 20px;
             font-weight: 800;
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            letter-spacing: -0.02em;
+            color: var(--x-blue);
+            letter-spacing: -0.5px;
         }
         
         .header-actions {
             display: flex;
-            gap: 0.75rem;
+            gap: 12px;
             align-items: center;
         }
         
         .user-info {
-            font-size: 0.875rem;
-            color: var(--text-secondary);
+            font-size: 15px;
+            color: var(--x-text-secondary);
             font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
         
-        /* Buttons */
+        .verified-badge {
+            color: var(--x-blue);
+            font-size: 18px;
+        }
+        
+        /* X-Style Buttons */
         button {
-            font-family: 'Inter', sans-serif;
-            padding: 0.75rem 1.5rem;
+            font-family: inherit;
+            padding: 8px 16px;
             border: none;
-            background: var(--primary);
+            background: var(--x-blue);
             color: white;
             cursor: pointer;
-            font-size: 0.9375rem;
+            font-size: 15px;
             font-weight: 700;
             border-radius: 9999px;
-            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-            position: relative;
-            overflow: hidden;
+            transition: all var(--transition-fast);
+            height: 36px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
         }
         
         button:hover {
-            background: var(--primary-dark);
-            transform: scale(1.05);
+            background: var(--x-blue-hover);
         }
         
         button:active {
-            transform: scale(0.95);
+            background: var(--x-blue-active);
         }
         
         button.secondary {
             background: transparent;
-            border: 1px solid var(--border);
-            color: var(--text-primary);
+            color: var(--x-text);
+            border: 1px solid var(--x-border);
         }
         
         button.secondary:hover {
-            background: var(--bg-tertiary);
-            border-color: var(--text-secondary);
-        }
-        
-        button.danger {
-            background: var(--danger);
-        }
-        
-        button.danger:hover {
-            background: #d01824;
-        }
-        
-        button.helper {
-            background: var(--gradient-2);
+            background: var(--x-bg-hover);
         }
         
         button:disabled {
             opacity: 0.5;
             cursor: not-allowed;
-            transform: none;
         }
         
-        /* Welcome Screen */
-        .welcome-screen {
+        /* Welcome & Auth */
+        .welcome-screen, .auth-screen {
             flex: 1;
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 2rem;
-            background: 
-                radial-gradient(ellipse at top right, rgba(29, 161, 242, 0.15) 0%, transparent 50%),
-                radial-gradient(ellipse at bottom left, rgba(255, 252, 0, 0.1) 0%, transparent 50%);
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .welcome-screen::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            right: -50%;
-            width: 100%;
-            height: 100%;
-            background: var(--gradient-3);
-            opacity: 0.1;
-            border-radius: 50%;
-            animation: float 20s infinite ease-in-out;
-        }
-        
-        @keyframes float {
-            0%, 100% { transform: translate(0, 0) rotate(0deg); }
-            50% { transform: translate(-20px, 20px) rotate(180deg); }
+            padding: 20px;
         }
         
         .welcome-content {
             max-width: 600px;
             text-align: center;
-            position: relative;
-            z-index: 1;
         }
         
         .welcome-content h1 {
-            font-size: clamp(2.5rem, 5vw, 4rem);
+            font-size: clamp(40px, 5vw, 64px);
             font-weight: 800;
-            margin-bottom: 1.5rem;
-            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
+            margin-bottom: 16px;
             line-height: 1.1;
+            letter-spacing: -2px;
+        }
+        
+        .welcome-content h1 .gradient-text {
+            color: var(--x-blue);
         }
         
         .welcome-content p {
-            font-size: 1.25rem;
-            color: var(--text-secondary);
-            margin-bottom: 2.5rem;
-            font-weight: 500;
+            font-size: 20px;
+            color: var(--x-text-secondary);
+            margin-bottom: 32px;
         }
         
-        .welcome-actions {
+        .welcome-options {
             display: flex;
-            gap: 1rem;
+            gap: 12px;
             justify-content: center;
             flex-wrap: wrap;
         }
         
-        /* Auth Form */
-        .auth-container {
-            flex: 1;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 2rem;
-            background: 
-                radial-gradient(ellipse at top left, rgba(29, 161, 242, 0.1) 0%, transparent 50%);
+        .welcome-options button {
+            height: 52px;
+            padding: 0 32px;
+            font-size: 17px;
         }
         
+        /* Auth Form */
         .auth-form {
-            background: var(--bg-secondary);
-            border: 1px solid var(--border);
-            border-radius: 1.5rem;
-            padding: 3rem;
-            max-width: 450px;
+            background: var(--x-bg);
+            border: 1px solid var(--x-border);
+            border-radius: 16px;
+            padding: 32px;
+            max-width: 440px;
             width: 100%;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
         }
         
         .auth-form h2 {
-            font-size: 2rem;
+            font-size: 31px;
+            margin-bottom: 8px;
             font-weight: 800;
-            margin-bottom: 0.5rem;
         }
         
-        .auth-form > p {
-            color: var(--text-secondary);
-            margin-bottom: 2rem;
+        .auth-form p {
+            color: var(--x-text-secondary);
+            margin-bottom: 32px;
+            font-size: 15px;
         }
         
         .form-group {
-            margin-bottom: 1.5rem;
+            margin-bottom: 20px;
         }
         
-        .form-group label {
+        label {
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--x-text-secondary);
             display: block;
-            margin-bottom: 0.5rem;
-            font-weight: 600;
-            font-size: 0.875rem;
-            color: var(--text-secondary);
+            margin-bottom: 8px;
         }
         
-        input[type="text"],
-        input[type="email"],
-        input[type="password"] {
+        input {
             width: 100%;
-            padding: 0.875rem 1.125rem;
-            background: var(--bg-tertiary);
-            border: 2px solid var(--border);
-            color: var(--text-primary);
-            font-family: 'Inter', sans-serif;
-            font-size: 1rem;
-            border-radius: 0.75rem;
-            transition: all 0.2s;
+            padding: 12px 16px;
+            background: var(--x-bg);
+            border: 1px solid var(--x-border);
+            color: var(--x-text);
+            font-family: inherit;
+            font-size: 15px;
+            border-radius: 4px;
+            transition: all var(--transition-fast);
         }
         
         input:focus {
             outline: none;
-            border-color: var(--primary);
-            background: var(--bg-primary);
-        }
-        
-        input::placeholder {
-            color: var(--text-secondary);
+            border-color: var(--x-blue);
         }
         
         .form-actions {
             display: flex;
-            gap: 1rem;
-            margin-top: 2rem;
+            gap: 12px;
+            margin-top: 24px;
         }
         
         .form-actions button {
             flex: 1;
+            height: 44px;
         }
         
         .error-message {
             background: rgba(244, 33, 46, 0.1);
-            border: 1px solid var(--danger);
-            color: var(--danger);
-            padding: 0.875rem 1.125rem;
-            border-radius: 0.75rem;
-            margin-bottom: 1.5rem;
-            font-size: 0.875rem;
-            font-weight: 600;
+            border: 1px solid var(--x-red);
+            color: var(--x-red);
+            padding: 12px;
+            margin-bottom: 20px;
+            border-radius: 4px;
+            font-size: 13px;
         }
         
         /* Chat Container */
         .chat-container {
             flex: 1;
-            display: flex;
-            background: var(--bg-primary);
+            display: grid;
+            grid-template-columns: 400px 1fr;
             overflow: hidden;
-            height: calc(100vh - 73px);
+            border-top: 1px solid var(--x-border);
         }
         
-        /* Rooms Sidebar */
+        /* Sidebar - X Style */
         .rooms-sidebar {
-            width: 320px;
-            border-right: 1px solid var(--border);
-            background: var(--bg-secondary);
+            background: var(--x-bg);
+            border-right: 1px solid var(--x-border);
             display: flex;
             flex-direction: column;
             overflow: hidden;
         }
         
         .rooms-header {
-            padding: 1.5rem;
-            border-bottom: 1px solid var(--border);
-        }
-        
-        .rooms-header h3 {
-            font-size: 1.25rem;
-            font-weight: 800;
-            margin-bottom: 0.25rem;
-        }
-        
-        .rooms-list {
-            flex: 1;
-            overflow-y: auto;
-        }
-        
-        .room-item {
-            padding: 1rem 1.5rem;
-            border-bottom: 1px solid var(--border);
-            cursor: pointer;
-            transition: all 0.2s;
-            display: flex;
-            gap: 0.75rem;
-            align-items: center;
-        }
-        
-        .room-item:hover {
-            background: var(--bg-tertiary);
-        }
-        
-        .room-item.active {
-            background: var(--bg-tertiary);
-            border-left: 3px solid var(--primary);
-        }
-        
-        .room-avatar {
-            width: 44px;
-            height: 44px;
-            border-radius: 50%;
-            background: var(--gradient-1);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 800;
-            font-size: 1.125rem;
+            padding: 0;
+            border-bottom: 1px solid var(--x-border);
             flex-shrink: 0;
         }
         
-        .room-info {
+        .rooms-header-title {
+            padding: 12px 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .rooms-header h3 {
+            font-size: 20px;
+            font-weight: 800;
+        }
+        
+        .rooms-count {
+            font-size: 13px;
+            color: var(--x-text-secondary);
+            background: var(--x-bg-secondary);
+            padding: 4px 10px;
+            border-radius: 9999px;
+            font-weight: 700;
+        }
+        
+        /* Search - X Style */
+        .search-container {
+            padding: 12px 16px;
+            background: var(--x-bg);
+            border-bottom: 1px solid var(--x-border);
+        }
+        
+        .search-wrapper {
+            position: relative;
+        }
+        
+        .search-input {
+            width: 100%;
+            height: 44px;
+            padding: 0 16px 0 48px;
+            background: var(--x-bg-secondary);
+            border: 1px solid transparent;
+            color: var(--x-text);
+            font-size: 15px;
+            border-radius: 9999px;
+            transition: all var(--transition-fast);
+        }
+        
+        .search-input:focus {
+            outline: none;
+            border-color: var(--x-blue);
+            background: var(--x-bg);
+        }
+        
+        .search-icon {
+            position: absolute;
+            left: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--x-text-secondary);
+            font-size: 16px;
+        }
+        
+        /* Filter Tabs - X Style */
+        .filter-tabs {
+            display: flex;
+            border-bottom: 1px solid var(--x-border);
+        }
+        
+        .filter-tab {
+            flex: 1;
+            padding: 16px;
+            background: transparent;
+            color: var(--x-text-secondary);
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all var(--transition-fast);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            position: relative;
+            border-radius: 0;
+            height: auto;
+        }
+        
+        .filter-tab:hover {
+            background: var(--x-bg-hover);
+            color: var(--x-text);
+        }
+        
+        .filter-tab.active {
+            color: var(--x-text);
+        }
+        
+        .filter-tab.active::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: var(--x-blue);
+            border-radius: 9999px 9999px 0 0;
+        }
+        
+        .filter-badge {
+            background: var(--x-blue);
+            color: white;
+            padding: 2px 8px;
+            border-radius: 9999px;
+            font-size: 12px;
+            font-weight: 700;
+            min-width: 20px;
+            text-align: center;
+        }
+        
+        /* Rooms List */
+        .rooms-list {
+            flex: 1;
+            overflow-y: auto;
+            overflow-x: hidden;
+        }
+        
+        .room-item {
+            padding: 16px;
+            border-bottom: 1px solid var(--x-border);
+            cursor: pointer;
+            transition: background var(--transition-fast);
+            display: flex;
+            gap: 12px;
+            align-items: flex-start;
+        }
+        
+        .room-item:hover {
+            background: var(--x-bg-hover);
+        }
+        
+        .room-item.active {
+            background: var(--x-bg-secondary);
+            border-right: 2px solid var(--x-blue);
+        }
+        
+        .room-avatar-wrapper {
+            position: relative;
+            flex-shrink: 0;
+        }
+        
+        .room-avatar {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 18px;
+            color: white;
+        }
+        
+        .room-online-dot {
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            width: 14px;
+            height: 14px;
+            background: var(--x-green);
+            border: 3px solid var(--x-bg);
+            border-radius: 50%;
+        }
+        
+        .room-content {
             flex: 1;
             min-width: 0;
         }
         
-        .room-nickname {
-            font-weight: 700;
-            font-size: 0.9375rem;
-            margin-bottom: 0.25rem;
+        .room-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            margin-bottom: 4px;
         }
         
-        .room-preview {
-            font-size: 0.8125rem;
-            color: var(--text-secondary);
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
+        .room-name {
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--x-text);
+            display: flex;
+            align-items: center;
+            gap: 4px;
         }
         
         .room-time {
-            font-size: 0.75rem;
-            color: var(--text-secondary);
-            flex-shrink: 0;
+            font-size: 13px;
+            color: var(--x-text-secondary);
+        }
+        
+        .room-item.unread .room-time {
+            color: var(--x-blue);
+            font-weight: 700;
+        }
+        
+        .room-preview {
+            font-size: 15px;
+            color: var(--x-text-secondary);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            line-height: 1.3;
+        }
+        
+        .room-item.unread .room-preview {
+            color: var(--x-text);
+            font-weight: 500;
+        }
+        
+        .unread-indicator {
+            width: 8px;
+            height: 8px;
+            background: var(--x-blue);
+            border-radius: 50%;
+            margin-left: 8px;
         }
         
         /* Chat Area */
         .chat-area {
-            flex: 1;
             display: flex;
             flex-direction: column;
+            background: var(--x-bg);
             overflow: hidden;
         }
         
         .chat-header {
-            padding: 1rem 1.5rem;
-            background: var(--bg-secondary);
-            border-bottom: 1px solid var(--border);
+            padding: 12px 16px;
+            background: var(--x-bg);
+            border-bottom: 1px solid var(--x-border);
             display: flex;
             justify-content: space-between;
             align-items: center;
+            height: 53px;
             flex-shrink: 0;
+            backdrop-filter: blur(12px);
         }
         
         .chat-header-left {
             display: flex;
-            gap: 0.75rem;
             align-items: center;
+            gap: 12px;
         }
         
         .chat-avatar {
-            width: 44px;
-            height: 44px;
+            width: 32px;
+            height: 32px;
             border-radius: 50%;
-            background: var(--gradient-1);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             display: flex;
             align-items: center;
             justify-content: center;
-            font-weight: 800;
-            font-size: 1.125rem;
-            flex-shrink: 0;
-        }
-        
-        .chat-info {
             font-weight: 700;
+            font-size: 14px;
+            color: white;
         }
         
         .chat-info h3 {
-            font-size: 1.125rem;
+            font-size: 15px;
             font-weight: 700;
-            margin-bottom: 0.125rem;
-        }
-        
-        .chat-info p {
-            font-size: 0.8125rem;
-            color: var(--text-secondary);
+            line-height: 1;
         }
         
         .chat-status {
-            display: inline-flex;
-            align-items: center;
-            gap: 0.375rem;
-        }
-        
-        .status-dot {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            background: var(--success);
-            animation: pulse 2s infinite;
-        }
-        
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.5; }
+            font-size: 13px;
+            color: var(--x-text-secondary);
+            margin-top: 2px;
         }
         
         /* Messages */
-        .messages-container {
+        .messages-wrapper {
             flex: 1;
             overflow-y: auto;
             overflow-x: hidden;
-            padding: 1.5rem;
-            display: flex;
-            flex-direction: column;
-            gap: 1rem;
-            scroll-behavior: smooth;
         }
         
-        .message {
+        .messages-container {
+            padding: 16px;
             display: flex;
-            gap: 0.75rem;
+            flex-direction: column;
+            gap: 4px;
+            min-height: 100%;
+        }
+        
+        /* Date Divider */
+        .date-divider {
+            text-align: center;
+            margin: 20px 0;
+        }
+        
+        .date-divider span {
+            background: var(--x-bg-secondary);
+            padding: 4px 12px;
+            border-radius: 9999px;
+            font-size: 13px;
+            color: var(--x-text-secondary);
+            font-weight: 700;
+        }
+        
+        /* Message Groups */
+        .message-group {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
             max-width: 70%;
-            animation: messageSlide 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            margin-bottom: 16px;
+        }
+        
+        .message-group.own {
+            align-self: flex-end;
+        }
+        
+        .message-group.other {
+            align-self: flex-start;
+        }
+        
+        .message-sender-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 4px;
+            padding-left: 4px;
+        }
+        
+        .message-sender-avatar {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 10px;
+            color: white;
+        }
+        
+        .message-sender-name {
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--x-text-secondary);
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        
+        /* Message Bubble - X Style */
+        .message-bubble-wrapper {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+        
+        .message-bubble {
+            background: var(--msg-other);
+            color: var(--msg-other-text);
+            padding: 12px 16px;
+            border-radius: 20px;
+            font-size: 15px;
+            line-height: 1.4;
+            word-wrap: break-word;
+            position: relative;
+            transition: all var(--transition-fast);
+            animation: messageSlide 0.2s ease-out;
         }
         
         @keyframes messageSlide {
@@ -492,87 +680,170 @@
             }
         }
         
-        .message.own {
-            align-self: flex-end;
-            flex-direction: row-reverse;
+        .message-group.own .message-bubble {
+            background: var(--msg-own);
+            color: var(--msg-own-text);
         }
         
-        .message-avatar {
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
-            background: var(--gradient-1);
+        .message-bubble:hover {
+            filter: brightness(1.1);
+        }
+        
+        /* Message Actions */
+        .message-actions {
+            display: none;
+            position: absolute;
+            top: -12px;
+            right: 8px;
+            background: var(--x-bg);
+            border: 1px solid var(--x-border);
+            border-radius: 9999px;
+            padding: 4px 8px;
+            gap: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+        }
+        
+        .message-bubble-wrapper:hover .message-actions {
+            display: flex;
+        }
+        
+        .message-action-btn {
+            background: transparent;
+            border: none;
+            padding: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            opacity: 0.7;
+            transition: all var(--transition-fast);
+            width: auto;
+            height: auto;
+        }
+        
+        .message-action-btn:hover {
+            opacity: 1;
+            transform: scale(1.2);
+        }
+        
+        /* Reactions */
+        .message-reactions {
+            display: flex;
+            gap: 4px;
+            flex-wrap: wrap;
+            margin-top: 4px;
+        }
+        
+        .reaction {
+            background: var(--reaction-bg);
+            border: 1px solid var(--reaction-border);
+            padding: 2px 8px;
+            border-radius: 9999px;
+            font-size: 13px;
             display: flex;
             align-items: center;
-            justify-content: center;
+            gap: 4px;
+            cursor: pointer;
+            transition: all var(--transition-fast);
+        }
+        
+        .reaction:hover {
+            background: rgba(29, 155, 240, 0.2);
+            border-color: var(--x-blue);
+        }
+        
+        .reaction-count {
+            font-size: 12px;
             font-weight: 700;
-            font-size: 0.875rem;
-            flex-shrink: 0;
+            color: var(--x-blue);
         }
         
-        .message.helper .message-avatar {
-            background: var(--gradient-2);
-        }
-        
-        .message-content {
-            flex: 1;
-        }
-        
-        .message-bubble {
-            background: var(--bg-message-other);
-            padding: 0.75rem 1rem;
-            border-radius: 1.25rem;
-            font-size: 0.9375rem;
-            line-height: 1.5;
-            word-wrap: break-word;
-        }
-        
-        .message.own .message-bubble {
-            background: var(--bg-message-own);
-            border-bottom-right-radius: 0.25rem;
-        }
-        
-        .message:not(.own) .message-bubble {
-            border-bottom-left-radius: 0.25rem;
-        }
-        
+        /* Message Meta */
         .message-meta {
             display: flex;
-            gap: 0.5rem;
             align-items: center;
-            margin-top: 0.375rem;
-            padding: 0 0.5rem;
+            gap: 8px;
+            margin-top: 2px;
+            padding: 0 4px;
+            font-size: 13px;
+            color: var(--x-text-secondary);
         }
         
-        .message.own .message-meta {
+        .message-group.own .message-meta {
             flex-direction: row-reverse;
-        }
-        
-        .message-time {
-            font-size: 0.75rem;
-            color: var(--text-secondary);
         }
         
         .message-category {
-            font-size: 0.6875rem;
-            padding: 0.125rem 0.5rem;
-            background: var(--bg-tertiary);
+            background: var(--x-bg-secondary);
+            padding: 2px 8px;
             border-radius: 9999px;
-            color: var(--text-secondary);
+            font-size: 11px;
+            font-weight: 700;
         }
         
-        /* Message Input */
+        /* Typing Indicator */
+        .typing-indicator {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 16px;
+            background: var(--msg-other);
+            border-radius: 20px;
+            max-width: 60px;
+            align-self: flex-start;
+        }
+        
+        .typing-dot {
+            width: 8px;
+            height: 8px;
+            background: var(--x-text-secondary);
+            border-radius: 50%;
+            animation: typing 1.4s infinite;
+        }
+        
+        .typing-dot:nth-child(2) { animation-delay: 0.2s; }
+        .typing-dot:nth-child(3) { animation-delay: 0.4s; }
+        
+        @keyframes typing {
+            0%, 60%, 100% { transform: translateY(0); opacity: 0.5; }
+            30% { transform: translateY(-8px); opacity: 1; }
+        }
+        
+        /* Message Input - X Style */
         .message-input-container {
-            padding: 1rem 1.5rem;
-            background: var(--bg-secondary);
-            border-top: 1px solid var(--border);
+            padding: 12px 16px;
+            background: var(--x-bg);
+            border-top: 1px solid var(--x-border);
             flex-shrink: 0;
         }
         
         .message-input-wrapper {
             display: flex;
-            gap: 0.75rem;
+            gap: 12px;
             align-items: flex-end;
+        }
+        
+        .input-actions {
+            display: flex;
+            gap: 8px;
+        }
+        
+        .input-action-btn {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            padding: 0;
+            background: transparent;
+            color: var(--x-blue);
+            border: none;
+            font-size: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all var(--transition-fast);
+        }
+        
+        .input-action-btn:hover {
+            background: rgba(29, 155, 240, 0.1);
         }
         
         .message-input {
@@ -581,74 +852,69 @@
         
         textarea {
             width: 100%;
-            padding: 1rem 1.25rem;
-            background: var(--bg-tertiary);
-            border: 2px solid var(--border);
-            color: var(--text-primary);
-            font-family: 'Inter', sans-serif;
-            font-size: 0.9375rem;
+            padding: 12px 16px;
+            background: var(--x-bg-secondary);
+            border: 1px solid transparent;
+            color: var(--x-text);
+            font-family: inherit;
+            font-size: 15px;
             resize: none;
-            min-height: 50px;
-            max-height: 150px;
-            border-radius: 1.5rem;
-            transition: all 0.2s;
+            min-height: 48px;
+            max-height: 200px;
+            border-radius: 20px;
+            transition: all var(--transition-fast);
         }
         
         textarea:focus {
             outline: none;
-            border-color: var(--primary);
-            background: var(--bg-primary);
+            border-color: var(--x-blue);
+            background: var(--x-bg);
         }
         
         textarea::placeholder {
-            color: var(--text-secondary);
+            color: var(--x-text-secondary);
         }
         
         .category-select {
             display: flex;
-            gap: 0.5rem;
+            gap: 6px;
             flex-wrap: wrap;
-            margin-top: 0.75rem;
+            margin-top: 8px;
         }
         
         .category-tag {
-            font-size: 0.75rem;
-            padding: 0.375rem 0.75rem;
-            background: var(--bg-tertiary);
-            border: 1px solid var(--border);
-            color: var(--text-secondary);
+            font-size: 13px;
+            padding: 4px 12px;
+            background: var(--x-bg-secondary);
+            border: 1px solid transparent;
+            color: var(--x-text-secondary);
             cursor: pointer;
             border-radius: 9999px;
-            transition: all 0.2s;
-            font-weight: 600;
+            transition: all var(--transition-fast);
+            font-weight: 700;
+            height: auto;
         }
         
         .category-tag.active {
-            background: var(--primary);
+            background: var(--x-blue);
             color: white;
-            border-color: var(--primary);
         }
         
         .category-tag:hover {
-            border-color: var(--primary);
-            color: var(--primary);
+            background: var(--x-bg-hover);
         }
         
         .send-button {
-            width: 50px;
-            height: 50px;
+            width: 36px;
+            height: 36px;
             border-radius: 50%;
             padding: 0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            font-size: 18px;
             flex-shrink: 0;
         }
         
         .send-button::after {
             content: '→';
-            font-size: 1.5rem;
-            font-weight: 700;
         }
         
         /* Empty State */
@@ -657,86 +923,117 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 3rem;
+            padding: 40px;
             text-align: center;
         }
         
-        .empty-state-content {
-            max-width: 400px;
-        }
-        
         .empty-state-icon {
-            font-size: 4rem;
-            margin-bottom: 1.5rem;
+            font-size: 64px;
+            margin-bottom: 16px;
             opacity: 0.5;
         }
         
         .empty-state h3 {
-            font-size: 1.5rem;
-            font-weight: 700;
-            margin-bottom: 0.75rem;
+            font-size: 20px;
+            font-weight: 800;
+            margin-bottom: 8px;
         }
         
         .empty-state p {
-            color: var(--text-secondary);
-            font-size: 1rem;
+            color: var(--x-text-secondary);
+            font-size: 15px;
         }
         
         /* Loading */
         .loading {
             display: inline-block;
-            width: 20px;
-            height: 20px;
-            border: 3px solid var(--border);
-            border-top-color: var(--primary);
+            width: 16px;
+            height: 16px;
+            border: 2px solid var(--x-border);
+            border-top-color: var(--x-blue);
             border-radius: 50%;
-            animation: spin 0.8s linear infinite;
+            animation: spin 0.6s linear infinite;
         }
         
         @keyframes spin {
-            to {
-                transform: rotate(360deg);
-            }
+            to { transform: rotate(360deg); }
         }
         
-        /* Scrollbar */
+        /* Toast */
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: var(--x-blue);
+            color: white;
+            padding: 12px 20px;
+            border-radius: 8px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+            animation: slideUp 0.3s ease-out;
+            z-index: 1000;
+            font-weight: 700;
+            font-size: 15px;
+        }
+        
+        @keyframes slideUp {
+            from { transform: translateY(100px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        
+        /* Keyboard Shortcut Hint */
+        .shortcut-hint {
+            font-size: 11px;
+            color: var(--x-text-secondary);
+            background: var(--x-bg-secondary);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: 700;
+        }
+        
+        /* Scrollbar - X Style */
         ::-webkit-scrollbar {
-            width: 8px;
+            width: 6px;
         }
         
         ::-webkit-scrollbar-track {
-            background: var(--bg-secondary);
+            background: transparent;
         }
         
         ::-webkit-scrollbar-thumb {
-            background: var(--border);
+            background: var(--x-border);
             border-radius: 10px;
         }
         
         ::-webkit-scrollbar-thumb:hover {
-            background: var(--text-secondary);
+            background: var(--x-text-secondary);
         }
         
-        /* Responsive */
+        /* Mobile Responsive */
         @media (max-width: 768px) {
-            .welcome-content h1 {
-                font-size: 2.5rem;
-            }
-            
-            .message {
-                max-width: 85%;
-            }
-            
-            .auth-form {
-                padding: 2rem;
+            .chat-container {
+                grid-template-columns: 1fr;
             }
             
             .rooms-sidebar {
                 display: none;
             }
             
-            .chat-container {
-                height: calc(100vh - 65px);
+            .message-group {
+                max-width: 85%;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .welcome-content h1 {
+                font-size: 32px;
+            }
+            
+            .message-group {
+                max-width: 90%;
+            }
+            
+            .auth-form {
+                padding: 24px;
             }
         }
     </style>
@@ -757,358 +1054,229 @@
             appId: "1:890636501707:web:1312727b07ea63b7dd914e"
         };
         
-        // Initialize Firebase - SIMPLIFIED
-        firebase.initializeApp(firebaseConfig);
-        const auth = firebase.auth();
-        const db = firebase.firestore();
+        // Initialize Firebase
+        let db, auth;
+        try {
+            if (!firebase.apps.length) {
+                firebase.initializeApp(firebaseConfig);
+            }
+            db = firebase.firestore();
+            auth = firebase.auth();
+        } catch (error) {
+            console.error("Firebase initialization error:", error);
+        }
         
         // Utility Functions
-        function formatTime(timestamp) {
+        const generateNickname = () => {
+            const adjectives = ['Anonymous', 'Silent', 'Quiet', 'Peaceful', 'Hopeful', 'Brave', 'Seeking', 'Lost', 'Wandering', 'Searching'];
+            const nouns = ['Soul', 'Heart', 'Spirit', 'Voice', 'Friend', 'Seeker', 'Traveler', 'Being', 'Person', 'One'];
+            return `${adjectives[Math.floor(Math.random() * adjectives.length)]} ${nouns[Math.floor(Math.random() * nouns.length)]}`;
+        };
+        
+        const formatTime = (timestamp) => {
             if (!timestamp) return '';
-            const date = timestamp.toDate();
+            const date = timestamp.toDate ? timestamp.toDate() : new Date(timestamp);
             const now = new Date();
-            const diffMs = now - date;
-            const diffMins = Math.floor(diffMs / 60000);
+            const diff = now - date;
+            const minutes = Math.floor(diff / 60000);
+            const hours = Math.floor(diff / 3600000);
+            const days = Math.floor(diff / 86400000);
             
-            if (diffMins < 1) return 'just now';
-            if (diffMins < 60) return `${diffMins}m`;
-            if (diffMins < 1440) return `${Math.floor(diffMins / 60)}h`;
-            return `${Math.floor(diffMins / 1440)}d`;
-        }
+            if (minutes < 1) return 'now';
+            if (minutes < 60) return `${minutes}m`;
+            if (hours < 24) return `${hours}h`;
+            if (days < 7) return `${days}d`;
+            return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+        };
         
-        function formatMessageTime(timestamp) {
+        const formatMessageTime = (timestamp) => {
             if (!timestamp) return '';
-            const date = timestamp.toDate();
+            const date = timestamp.toDate ? timestamp.toDate() : new Date(timestamp);
             return date.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
-        }
+        };
         
-        // Main App Component
+        const formatDateDivider = (timestamp) => {
+            if (!timestamp) return '';
+            const date = timestamp.toDate ? timestamp.toDate() : new Date(timestamp);
+            const today = new Date();
+            const yesterday = new Date(today);
+            yesterday.setDate(yesterday.getDate() - 1);
+            
+            if (date.toDateString() === today.toDateString()) return 'Today';
+            if (date.toDateString() === yesterday.toDateString()) return 'Yesterday';
+            return date.toLocaleDateString('en-US', { month: 'long', day: 'numeric' });
+        };
+        
+        // Main App
         function App() {
-            const [user, setUser] = useState(null);
-            const [loading, setLoading] = useState(true);
             const [view, setView] = useState('welcome');
-            const [room, setRoom] = useState(null);
+            const [user, setUser] = useState(null);
+            const [userRole, setUserRole] = useState(null);
             const [currentRoom, setCurrentRoom] = useState(null);
+            const [toast, setToast] = useState(null);
             
             useEffect(() => {
-                const unsubscribe = auth.onAuthStateChanged(async (user) => {
-                    setUser(user);
-                    
-                    if (user) {
-                        if (user.isAnonymous) {
-                            // Check for existing room
-                            const existingRoomQuery = await db.collection('rooms')
-                                .where('visitorId', '==', user.uid)
-                                .where('status', 'in', ['waiting', 'active'])
-                                .limit(1)
-                                .get();
-                            
-                            if (!existingRoomQuery.empty) {
-                                const existingRoom = {
-                                    id: existingRoomQuery.docs[0].id,
-                                    ...existingRoomQuery.docs[0].data()
-                                };
-                                setRoom(existingRoom);
-                                setView('visitor-chat');
-                            } else {
-                                setView('visitor-setup');
-                            }
-                        } else {
-                            setView('helper-dashboard');
-                        }
+                const unsubscribe = auth.onAuthStateChanged((firebaseUser) => {
+                    if (firebaseUser) {
+                        setUser(firebaseUser);
+                        setUserRole(firebaseUser.isAnonymous ? 'visitor' : 'helper');
+                        if (!firebaseUser.isAnonymous) setView('helper-dashboard');
+                    } else {
+                        setUser(null);
+                        setUserRole(null);
                     }
-                    
-                    setLoading(false);
                 });
                 
                 return () => unsubscribe();
             }, []);
             
-            if (loading) {
-                return (
-                    <div className="app">
-                        <div style={{
-                            flex: 1,
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center'
-                        }}>
-                            <span className="loading"></span>
-                        </div>
-                    </div>
-                );
-            }
+            const handleStartChat = async () => {
+                try {
+                    const result = await auth.signInAnonymously();
+                    const nickname = generateNickname();
+                    
+                    const roomRef = await db.collection('rooms').add({
+                        visitorId: result.user.uid,
+                        visitorNickname: nickname,
+                        helperId: null,
+                        createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                        lastMessage: '',
+                        lastMessageTime: firebase.firestore.FieldValue.serverTimestamp(),
+                        status: 'waiting',
+                        lastReadByHelper: null
+                    });
+                    
+                    setCurrentRoom({ id: roomRef.id, visitorNickname: nickname, visitorId: result.user.uid });
+                    setView('visitor-chat');
+                } catch (error) {
+                    console.error('Error:', error);
+                    showToast('Failed to start chat. Please try again.');
+                }
+            };
+            
+            const handleLogout = async () => {
+                await auth.signOut();
+                setView('welcome');
+                setCurrentRoom(null);
+            };
+            
+            const showToast = (message) => {
+                setToast(message);
+                setTimeout(() => setToast(null), 3000);
+            };
             
             return (
                 <div className="app">
-                    <Header 
-                        user={user} 
-                        view={view} 
-                        onLogout={() => {
-                            auth.signOut();
-                            setView('welcome');
-                            setRoom(null);
-                            setCurrentRoom(null);
-                        }}
-                        onEndChat={async () => {
-                            if (room) {
-                                await db.collection('rooms').doc(room.id).update({
-                                    status: 'ended',
-                                    endedAt: firebase.firestore.FieldValue.serverTimestamp()
-                                });
-                            }
-                            auth.signOut();
-                            setView('welcome');
-                            setRoom(null);
-                        }}
-                    />
+                    <Header view={view} user={user} userRole={userRole} onLogout={handleLogout} />
                     
-                    {view === 'welcome' && (
-                        <WelcomeScreen 
-                            onVisitorStart={() => setView('visitor-setup')}
-                            onHelperLogin={() => setView('helper-login')}
-                        />
-                    )}
+                    {view === 'welcome' && <WelcomeScreen onStartChat={handleStartChat} onHelperLogin={() => setView('helper-login')} />}
+                    {view === 'helper-login' && <HelperLoginScreen onBack={() => setView('welcome')} onSuccess={() => setView('helper-dashboard')} />}
+                    {view === 'visitor-chat' && currentRoom && <VisitorChat room={currentRoom} user={user} onToast={showToast} />}
+                    {view === 'helper-dashboard' && user && <HelperDashboard user={user} currentRoom={currentRoom} setCurrentRoom={setCurrentRoom} onToast={showToast} />}
                     
-                    {view === 'visitor-setup' && (
-                        <VisitorSetup 
-                            user={user}
-                            onRoomCreated={(newRoom) => {
-                                setRoom(newRoom);
-                                setView('visitor-chat');
-                            }}
-                            onBack={() => {
-                                auth.signOut();
-                                setView('welcome');
-                            }}
-                        />
-                    )}
-                    
-                    {view === 'visitor-chat' && room && (
-                        <VisitorChatInterface 
-                            room={room}
-                            user={user}
-                        />
-                    )}
-                    
-                    {view === 'helper-login' && (
-                        <HelperLogin 
-                            onBack={() => setView('welcome')}
-                        />
-                    )}
-                    
-                    {view === 'helper-dashboard' && (
-                        <HelperDashboard 
-                            user={user}
-                            currentRoom={currentRoom}
-                            setCurrentRoom={setCurrentRoom}
-                        />
-                    )}
+                    {toast && <div className="toast">{toast}</div>}
                 </div>
             );
         }
         
-        // Header Component
-        function Header({ user, view, onLogout, onEndChat }) {
+        // Header
+        function Header({ view, user, userRole, onLogout }) {
             return (
                 <header className="header">
                     <div className="logo">SafeSpace</div>
                     <div className="header-actions">
-                        {user && (
-                            <>
-                                {user.isAnonymous ? (
-                                    <span className="user-info">Anonymous</span>
-                                ) : (
-                                    <span className="user-info">{user.email}</span>
-                                )}
-                                {view === 'visitor-chat' ? (
-                                    <button onClick={onEndChat} className="danger">
-                                        End Chat
-                                    </button>
-                                ) : (
-                                    <button onClick={onLogout} className="secondary">
-                                        Logout
-                                    </button>
-                                )}
-                            </>
+                        {user && userRole && (
+                            <span className="user-info">
+                                {userRole === 'helper' ? (
+                                    <>{user.email} <span className="verified-badge">✓</span></>
+                                ) : 'Anonymous'}
+                            </span>
+                        )}
+                        {user && view !== 'welcome' && (
+                            <button onClick={onLogout} className="secondary">
+                                {userRole === 'helper' ? 'Logout' : 'End'}
+                            </button>
                         )}
                     </div>
                 </header>
             );
         }
         
-        // Welcome Screen
-        function WelcomeScreen({ onVisitorStart, onHelperLogin }) {
+        // Welcome
+        function WelcomeScreen({ onStartChat, onHelperLogin }) {
             return (
                 <div className="welcome-screen">
                     <div className="welcome-content">
-                        <h1>Your Safe Space Awaits</h1>
-                        <p>Anonymous, confidential support when you need it most. Connect with caring helpers ready to listen.</p>
-                        <div className="welcome-actions">
-                            <button onClick={onVisitorStart}>I need to talk</button>
-                            <button onClick={onHelperLogin} className="helper">
-                                I'm a helper
-                            </button>
+                        <h1>A <span className="gradient-text">safe space</span> for everyone</h1>
+                        <p>Share freely. Connect with helpers. Completely anonymous.</p>
+                        <div className="welcome-options">
+                            <button onClick={onStartChat}>Start Anonymous Chat</button>
+                            <button onClick={onHelperLogin} className="secondary">Helper Login</button>
                         </div>
                     </div>
                 </div>
             );
         }
         
-        // Visitor Setup
-        function VisitorSetup({ user, onRoomCreated, onBack }) {
-            const [nickname, setNickname] = useState('');
-            const [loading, setLoading] = useState(false);
-            const [error, setError] = useState('');
-            
-            const createRoom = async (e) => {
-                e.preventDefault();
-                if (!nickname.trim()) {
-                    setError('Please enter a nickname');
-                    return;
-                }
-                
-                setLoading(true);
-                setError('');
-                
-                try {
-                    let currentUser = user;
-                    if (!currentUser) {
-                        const result = await auth.signInAnonymously();
-                        currentUser = result.user;
-                    }
-                    
-                    const roomData = {
-                        visitorId: currentUser.uid,
-                        visitorNickname: nickname,
-                        status: 'waiting',
-                        createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-                        lastMessageTime: firebase.firestore.FieldValue.serverTimestamp(),
-                        lastMessage: 'Waiting for helper...'
-                    };
-                    
-                    const roomRef = await db.collection('rooms').add(roomData);
-                    
-                    onRoomCreated({
-                        id: roomRef.id,
-                        ...roomData,
-                        createdAt: new Date(),
-                        lastMessageTime: new Date()
-                    });
-                } catch (error) {
-                    console.error('Error creating room:', error);
-                    setError('Failed to create room. Please try again.');
-                    setLoading(false);
-                }
-            };
-            
-            return (
-                <div className="auth-container">
-                    <form onSubmit={createRoom} className="auth-form">
-                        <h2>Welcome</h2>
-                        <p>Choose a nickname to get started. It can be anything you like.</p>
-                        
-                        {error && <div className="error-message">{error}</div>}
-                        
-                        <div className="form-group">
-                            <label>Your Nickname</label>
-                            <input 
-                                type="text" 
-                                value={nickname}
-                                onChange={(e) => setNickname(e.target.value)}
-                                placeholder="e.g., Brave Soul, Hope Seeker..."
-                                maxLength="30"
-                                required
-                            />
-                        </div>
-                        
-                        <div className="form-actions">
-                            <button type="button" onClick={onBack} className="secondary">
-                                Back
-                            </button>
-                            <button type="submit" disabled={loading}>
-                                {loading ? <span className="loading"></span> : 'Start Chat'}
-                            </button>
-                        </div>
-                    </form>
-                </div>
-            );
-        }
-        
-        // Helper Login
-        function HelperLogin({ onBack }) {
+        // Auth
+        function HelperLoginScreen({ onBack, onSuccess }) {
             const [email, setEmail] = useState('');
             const [password, setPassword] = useState('');
-            const [loading, setLoading] = useState(false);
             const [error, setError] = useState('');
+            const [loading, setLoading] = useState(false);
             const [isSignup, setIsSignup] = useState(false);
             
             const handleSubmit = async (e) => {
                 e.preventDefault();
-                setLoading(true);
                 setError('');
+                setLoading(true);
                 
                 try {
                     if (isSignup) {
                         await auth.createUserWithEmailAndPassword(email, password);
+                        await db.collection('helpers').doc(auth.currentUser.uid).set({
+                            email: email,
+                            createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                        });
                     } else {
                         await auth.signInWithEmailAndPassword(email, password);
                     }
-                } catch (error) {
-                    console.error('Auth error:', error);
-                    setError(error.message);
+                    onSuccess();
+                } catch (err) {
+                    setError(err.message);
+                } finally {
                     setLoading(false);
                 }
             };
             
             return (
-                <div className="auth-container">
-                    <form onSubmit={handleSubmit} className="auth-form">
-                        <h2>{isSignup ? 'Create Account' : 'Helper Login'}</h2>
+                <div className="auth-screen">
+                    <form className="auth-form" onSubmit={handleSubmit}>
+                        <h2>{isSignup ? 'Create Account' : 'Welcome back'}</h2>
                         <p>{isSignup ? 'Join our team of helpers' : 'Sign in to help those in need'}</p>
                         
                         {error && <div className="error-message">{error}</div>}
                         
                         <div className="form-group">
                             <label>Email</label>
-                            <input 
-                                type="email" 
-                                value={email}
-                                onChange={(e) => setEmail(e.target.value)}
-                                placeholder="your@email.com"
-                                required
-                            />
+                            <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="your@email.com" required />
                         </div>
                         
                         <div className="form-group">
                             <label>Password</label>
-                            <input 
-                                type="password" 
-                                value={password}
-                                onChange={(e) => setPassword(e.target.value)}
-                                placeholder="••••••••"
-                                required
-                                minLength="6"
-                            />
+                            <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="••••••••" required minLength="6" />
                         </div>
                         
                         <div className="form-actions">
-                            <button type="button" onClick={onBack} className="secondary">
-                                Back
-                            </button>
-                            <button type="submit" className="helper" disabled={loading}>
+                            <button type="button" onClick={onBack} className="secondary">Back</button>
+                            <button type="submit" disabled={loading}>
                                 {loading ? <span className="loading"></span> : (isSignup ? 'Sign Up' : 'Login')}
                             </button>
                         </div>
                         
-                        <div style={{marginTop: '1rem', textAlign: 'center'}}>
-                            <button 
-                                type="button" 
-                                onClick={() => setIsSignup(!isSignup)}
-                                className="secondary"
-                                style={{fontSize: '0.875rem', padding: '0.5rem 1rem'}}
-                            >
-                                {isSignup ? 'Already have an account? Login' : 'Need an account? Sign up'}
+                        <div style={{marginTop: '16px', textAlign: 'center'}}>
+                            <button type="button" onClick={() => setIsSignup(!isSignup)} className="secondary" style={{fontSize: '13px', padding: '6px 16px', height: '32px'}}>
+                                {isSignup ? 'Have an account? Login' : 'Need an account? Sign up'}
                             </button>
                         </div>
                     </form>
@@ -1116,40 +1284,34 @@
             );
         }
         
-        // Visitor Chat Interface - BACK TO BASICS
-        function VisitorChatInterface({ room, user }) {
+        // Visitor Chat
+        function VisitorChat({ room, user, onToast }) {
             const [messages, setMessages] = useState([]);
             const [messageText, setMessageText] = useState('');
             const [category, setCategory] = useState('general');
             const messagesEndRef = useRef(null);
+            const lastCount = useRef(0);
             
             const categories = ['general', 'spiritual', 'emotional', 'physical'];
             
-            // SIMPLIFIED MESSAGE LISTENER
             useEffect(() => {
                 if (!room?.id) return;
                 
-                console.log('👂 Visitor listening to room:', room.id);
-                
-                const unsubscribe = db.collection('rooms')
-                    .doc(room.id)
-                    .collection('messages')
+                const unsubscribe = db.collection('rooms').doc(room.id).collection('messages')
                     .orderBy('timestamp', 'asc')
-                    .onSnapshot(
-                        (snapshot) => {
-                            console.log('📨 Visitor got', snapshot.docs.length, 'messages');
-                            
-                            const msgs = snapshot.docs.map(doc => ({
-                                id: doc.id,
-                                ...doc.data()
-                            }));
-                            
-                            setMessages(msgs);
-                        },
-                        (error) => {
-                            console.error('❌ Visitor message error:', error);
+                    .onSnapshot((snapshot) => {
+                        const msgs = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                        
+                        if (msgs.length > lastCount.current) {
+                            const newMsgs = msgs.slice(lastCount.current);
+                            newMsgs.forEach(msg => {
+                                if (msg.senderType === 'helper') onToast('Helper replied');
+                            });
                         }
-                    );
+                        
+                        lastCount.current = msgs.length;
+                        setMessages(msgs);
+                    });
                 
                 return () => unsubscribe();
             }, [room?.id]);
@@ -1179,63 +1341,82 @@
                     
                     setMessageText('');
                 } catch (error) {
-                    console.error('Error sending message:', error);
+                    console.error('Error:', error);
                 }
             };
+            
+            const groupedMessages = messages.reduce((groups, msg, i) => {
+                const prev = messages[i - 1];
+                const currDate = msg.timestamp ? formatDateDivider(msg.timestamp) : '';
+                const prevDate = prev?.timestamp ? formatDateDivider(prev.timestamp) : '';
+                
+                if (currDate !== prevDate) groups.push({ type: 'date', content: currDate });
+                
+                if (!prev || prev.senderType !== msg.senderType) {
+                    groups.push({ type: 'group', messages: [msg], senderType: msg.senderType });
+                } else {
+                    groups[groups.length - 1].messages.push(msg);
+                }
+                
+                return groups;
+            }, []);
             
             return (
                 <div className="chat-container">
                     <div className="chat-area">
                         <div className="chat-header">
                             <div className="chat-header-left">
-                                <div className="chat-avatar">
-                                    {room.visitorNickname?.[0] || '?'}
-                                </div>
+                                <div className="chat-avatar">{room.visitorNickname?.[0] || '?'}</div>
                                 <div className="chat-info">
                                     <h3>Your Safe Space</h3>
-                                    <p className="chat-status">
-                                        <span className="status-dot"></span>
-                                        Private & Confidential
-                                    </p>
+                                    <p className="chat-status">Private & Confidential</p>
                                 </div>
                             </div>
                         </div>
                         
-                        <div className="messages-container">
-                            {messages.length === 0 ? (
-                                <div className="empty-state">
-                                    <div className="empty-state-content">
-                                        <div className="empty-state-icon">💬</div>
-                                        <h3>Welcome to your safe space</h3>
-                                        <p>Share what's on your mind. A helper will join soon to support you.</p>
-                                    </div>
-                                </div>
-                            ) : (
-                                <>
-                                    {messages.map((msg) => (
-                                        <div 
-                                            key={msg.id} 
-                                            className={`message ${msg.senderId === user.uid ? 'own' : ''} ${msg.senderType === 'helper' ? 'helper' : ''}`}
-                                        >
-                                            <div className="message-avatar">
-                                                {msg.senderNickname?.[0] || '?'}
-                                            </div>
-                                            <div className="message-content">
-                                                <div className="message-bubble">
-                                                    {msg.text}
-                                                </div>
-                                                <div className="message-meta">
-                                                    <span className="message-time">{formatMessageTime(msg.timestamp)}</span>
-                                                    {msg.category && msg.category !== 'general' && (
-                                                        <span className="message-category">{msg.category}</span>
-                                                    )}
-                                                </div>
-                                            </div>
+                        <div className="messages-wrapper">
+                            <div className="messages-container">
+                                {messages.length === 0 ? (
+                                    <div className="empty-state">
+                                        <div className="empty-state-content">
+                                            <div className="empty-state-icon">💬</div>
+                                            <h3>Welcome</h3>
+                                            <p>Share what's on your mind. A helper will join soon.</p>
                                         </div>
-                                    ))}
-                                </>
-                            )}
-                            <div ref={messagesEndRef} />
+                                    </div>
+                                ) : (
+                                    <>
+                                        {groupedMessages.map((group, gi) => (
+                                            group.type === 'date' ? (
+                                                <div key={`date-${gi}`} className="date-divider">
+                                                    <span>{group.content}</span>
+                                                </div>
+                                            ) : (
+                                                <div key={`group-${gi}`} className={`message-group ${group.senderType === 'visitor' ? 'own' : 'other'}`}>
+                                                    {group.senderType === 'helper' && (
+                                                        <div className="message-sender-header">
+                                                            <div className="message-sender-avatar">H</div>
+                                                            <span className="message-sender-name">Helper <span className="verified-badge">✓</span></span>
+                                                        </div>
+                                                    )}
+                                                    {group.messages.map((msg) => (
+                                                        <div key={msg.id} className="message-bubble-wrapper">
+                                                            <div className="message-bubble">{msg.text}</div>
+                                                            <div className="message-meta">
+                                                                <span>{formatMessageTime(msg.timestamp)}</span>
+                                                                {msg.category && msg.category !== 'general' && (
+                                                                    <span className="message-category">{msg.category}</span>
+                                                                )}
+                                                            </div>
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            )
+                                        ))}
+                                    </>
+                                )}
+                                <div ref={messagesEndRef} />
+                            </div>
                         </div>
                         
                         <div className="message-input-container">
@@ -1273,21 +1454,25 @@
             );
         }
         
-        // Helper Dashboard - BACK TO BASICS
-        function HelperDashboard({ user, currentRoom, setCurrentRoom }) {
+        // Helper Dashboard
+        function HelperDashboard({ user, currentRoom, setCurrentRoom, onToast }) {
             const [rooms, setRooms] = useState([]);
             const [messages, setMessages] = useState([]);
             const [messageText, setMessageText] = useState('');
+            const [filterTab, setFilterTab] = useState('all');
+            const [searchQuery, setSearchQuery] = useState('');
             const messagesEndRef = useRef(null);
+            const lastRoomCount = useRef(0);
             
             useEffect(() => {
                 const unsubscribe = db.collection('rooms')
                     .orderBy('lastMessageTime', 'desc')
                     .onSnapshot((snapshot) => {
-                        const roomsList = snapshot.docs.map(doc => ({
-                            id: doc.id,
-                            ...doc.data()
-                        }));
+                        const roomsList = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                        
+                        if (roomsList.length > lastRoomCount.current) onToast('New visitor');
+                        
+                        lastRoomCount.current = roomsList.length;
                         setRooms(roomsList);
                     });
                 
@@ -1297,26 +1482,15 @@
             useEffect(() => {
                 if (!currentRoom?.id) return;
                 
-                console.log('👂 Helper listening to room:', currentRoom.id);
-                
-                const unsubscribe = db.collection('rooms')
-                    .doc(currentRoom.id)
-                    .collection('messages')
+                const unsubscribe = db.collection('rooms').doc(currentRoom.id).collection('messages')
                     .orderBy('timestamp', 'asc')
-                    .onSnapshot(
-                        (snapshot) => {
-                            console.log('📨 Helper got', snapshot.docs.length, 'messages');
-                            
-                            const msgs = snapshot.docs.map(doc => ({
-                                id: doc.id,
-                                ...doc.data()
-                            }));
-                            setMessages(msgs);
-                        },
-                        (error) => {
-                            console.error('❌ Helper message error:', error);
-                        }
-                    );
+                    .onSnapshot((snapshot) => {
+                        setMessages(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
+                    });
+                
+                db.collection('rooms').doc(currentRoom.id).update({
+                    lastReadByHelper: firebase.firestore.FieldValue.serverTimestamp()
+                });
                 
                 return () => unsubscribe();
             }, [currentRoom?.id]);
@@ -1330,8 +1504,6 @@
                 if (!messageText.trim() || !currentRoom?.id) return;
                 
                 try {
-                    console.log('📤 Helper sending message');
-                    
                     await db.collection('rooms').doc(currentRoom.id).collection('messages').add({
                         text: messageText,
                         senderId: user.uid,
@@ -1348,43 +1520,101 @@
                     });
                     
                     setMessageText('');
-                    console.log('✅ Message sent successfully');
                 } catch (error) {
-                    console.error('❌ Error sending message:', error);
+                    console.error('Error:', error);
                 }
             };
+            
+            const filteredRooms = rooms.filter(room => {
+                const matchesSearch = room.visitorNickname?.toLowerCase().includes(searchQuery.toLowerCase());
+                if (filterTab === 'unread') return matchesSearch && (!room.lastReadByHelper || room.lastMessageTime > room.lastReadByHelper);
+                if (filterTab === 'unreplied') return matchesSearch && !room.helperId;
+                return matchesSearch;
+            });
+            
+            const unreadCount = rooms.filter(r => !r.lastReadByHelper || r.lastMessageTime > r.lastReadByHelper).length;
+            const unrepliedCount = rooms.filter(r => !r.helperId).length;
+            
+            const groupedMessages = messages.reduce((groups, msg, i) => {
+                const prev = messages[i - 1];
+                const currDate = msg.timestamp ? formatDateDivider(msg.timestamp) : '';
+                const prevDate = prev?.timestamp ? formatDateDivider(prev.timestamp) : '';
+                
+                if (currDate !== prevDate) groups.push({ type: 'date', content: currDate });
+                
+                if (!prev || prev.senderType !== msg.senderType) {
+                    groups.push({ type: 'group', messages: [msg], senderType: msg.senderType });
+                } else {
+                    groups[groups.length - 1].messages.push(msg);
+                }
+                
+                return groups;
+            }, []);
             
             return (
                 <div className="chat-container">
                     <div className="rooms-sidebar">
                         <div className="rooms-header">
-                            <h3>Active Conversations</h3>
-                            <p style={{fontSize: '0.875rem', color: 'var(--text-secondary)', marginTop: '0.5rem'}}>
-                                {rooms.length} {rooms.length === 1 ? 'visitor' : 'visitors'} waiting
-                            </p>
+                            <div className="rooms-header-title">
+                                <h3>Messages</h3>
+                                <span className="rooms-count">{filteredRooms.length}</span>
+                            </div>
                         </div>
+                        
+                        <div className="search-container">
+                            <div className="search-wrapper">
+                                <span className="search-icon">🔍</span>
+                                <input 
+                                    type="text"
+                                    className="search-input"
+                                    placeholder="Search messages"
+                                    value={searchQuery}
+                                    onChange={(e) => setSearchQuery(e.target.value)}
+                                />
+                            </div>
+                        </div>
+                        
+                        <div className="filter-tabs">
+                            <button className={`filter-tab ${filterTab === 'all' ? 'active' : ''}`} onClick={() => setFilterTab('all')}>All</button>
+                            <button className={`filter-tab ${filterTab === 'unread' ? 'active' : ''}`} onClick={() => setFilterTab('unread')}>
+                                Unread {unreadCount > 0 && <span className="filter-badge">{unreadCount}</span>}
+                            </button>
+                            <button className={`filter-tab ${filterTab === 'unreplied' ? 'active' : ''}`} onClick={() => setFilterTab('unreplied')}>
+                                New {unrepliedCount > 0 && <span className="filter-badge">{unrepliedCount}</span>}
+                            </button>
+                        </div>
+                        
                         <div className="rooms-list">
-                            {rooms.map(room => (
-                                <div 
-                                    key={room.id}
-                                    className={`room-item ${currentRoom?.id === room.id ? 'active' : ''}`}
-                                    onClick={() => setCurrentRoom(room)}
-                                >
-                                    <div className="room-avatar">
-                                        {room.visitorNickname?.[0] || '?'}
+                            {filteredRooms.map(room => {
+                                const isUnread = !room.lastReadByHelper || room.lastMessageTime > room.lastReadByHelper;
+                                return (
+                                    <div 
+                                        key={room.id}
+                                        className={`room-item ${currentRoom?.id === room.id ? 'active' : ''} ${isUnread ? 'unread' : ''}`}
+                                        onClick={() => setCurrentRoom(room)}
+                                    >
+                                        <div className="room-avatar-wrapper">
+                                            <div className="room-avatar">{room.visitorNickname?.[0] || '?'}</div>
+                                            <div className="room-online-dot"></div>
+                                        </div>
+                                        <div className="room-content">
+                                            <div className="room-header">
+                                                <span className="room-name">
+                                                    {room.visitorNickname}
+                                                    {isUnread && <span className="unread-indicator"></span>}
+                                                </span>
+                                                <span className="room-time">{formatTime(room.lastMessageTime)}</span>
+                                            </div>
+                                            <div className="room-preview">{room.lastMessage || 'No messages yet'}</div>
+                                        </div>
                                     </div>
-                                    <div className="room-info">
-                                        <div className="room-nickname">{room.visitorNickname}</div>
-                                        <div className="room-preview">{room.lastMessage || 'No messages yet'}</div>
-                                    </div>
-                                    <div className="room-time">{formatTime(room.lastMessageTime)}</div>
-                                </div>
-                            ))}
-                            {rooms.length === 0 && (
+                                );
+                            })}
+                            {filteredRooms.length === 0 && (
                                 <div className="empty-state">
                                     <div className="empty-state-content">
                                         <div className="empty-state-icon">👋</div>
-                                        <p>No visitors yet. They'll appear here when they start a chat.</p>
+                                        <p>{searchQuery ? 'No conversations found' : 'No visitors yet'}</p>
                                     </div>
                                 </div>
                             )}
@@ -1396,42 +1626,45 @@
                             <>
                                 <div className="chat-header">
                                     <div className="chat-header-left">
-                                        <div className="chat-avatar">
-                                            {currentRoom.visitorNickname?.[0] || '?'}
-                                        </div>
+                                        <div className="chat-avatar">{currentRoom.visitorNickname?.[0] || '?'}</div>
                                         <div className="chat-info">
                                             <h3>{currentRoom.visitorNickname}</h3>
-                                            <p className="chat-status">
-                                                <span className="status-dot"></span>
-                                                Active now
-                                            </p>
+                                            <p className="chat-status">Active now</p>
                                         </div>
                                     </div>
                                 </div>
                                 
-                                <div className="messages-container">
-                                    {messages.map((msg) => (
-                                        <div 
-                                            key={msg.id} 
-                                            className={`message ${msg.senderId === user.uid ? 'own' : ''} ${msg.senderType === 'helper' ? 'helper' : ''}`}
-                                        >
-                                            <div className="message-avatar">
-                                                {msg.senderNickname?.[0] || '?'}
-                                            </div>
-                                            <div className="message-content">
-                                                <div className="message-bubble">
-                                                    {msg.text}
+                                <div className="messages-wrapper">
+                                    <div className="messages-container">
+                                        {groupedMessages.map((group, gi) => (
+                                            group.type === 'date' ? (
+                                                <div key={`date-${gi}`} className="date-divider">
+                                                    <span>{group.content}</span>
                                                 </div>
-                                                <div className="message-meta">
-                                                    <span className="message-time">{formatMessageTime(msg.timestamp)}</span>
-                                                    {msg.category && msg.category !== 'general' && (
-                                                        <span className="message-category">{msg.category}</span>
+                                            ) : (
+                                                <div key={`group-${gi}`} className={`message-group ${group.senderType === 'helper' ? 'own' : 'other'}`}>
+                                                    {group.senderType === 'visitor' && (
+                                                        <div className="message-sender-header">
+                                                            <div className="message-sender-avatar">{currentRoom.visitorNickname?.[0]}</div>
+                                                            <span className="message-sender-name">{currentRoom.visitorNickname}</span>
+                                                        </div>
                                                     )}
+                                                    {group.messages.map((msg) => (
+                                                        <div key={msg.id} className="message-bubble-wrapper">
+                                                            <div className="message-bubble">{msg.text}</div>
+                                                            <div className="message-meta">
+                                                                <span>{formatMessageTime(msg.timestamp)}</span>
+                                                                {msg.category && msg.category !== 'general' && (
+                                                                    <span className="message-category">{msg.category}</span>
+                                                                )}
+                                                            </div>
+                                                        </div>
+                                                    ))}
                                                 </div>
-                                            </div>
-                                        </div>
-                                    ))}
-                                    <div ref={messagesEndRef} />
+                                            )
+                                        ))}
+                                        <div ref={messagesEndRef} />
+                                    </div>
                                 </div>
                                 
                                 <div className="message-input-container">
@@ -1440,7 +1673,7 @@
                                             <textarea 
                                                 value={messageText}
                                                 onChange={(e) => setMessageText(e.target.value)}
-                                                placeholder="Type your response..."
+                                                placeholder="Type a message..."
                                                 onKeyDown={(e) => {
                                                     if (e.key === 'Enter' && !e.shiftKey) {
                                                         e.preventDefault();
@@ -1457,8 +1690,8 @@
                             <div className="empty-state">
                                 <div className="empty-state-content">
                                     <div className="empty-state-icon">💬</div>
-                                    <h3>Select a conversation</h3>
-                                    <p>Choose a visitor from the sidebar to start helping.</p>
+                                    <h3>Select a message</h3>
+                                    <p>Choose a conversation to start helping</p>
                                 </div>
                             </div>
                         )}
@@ -1467,7 +1700,6 @@
             );
         }
         
-        // Render App
         ReactDOM.render(<App />, document.getElementById('root'));
     </script>
 </body>
